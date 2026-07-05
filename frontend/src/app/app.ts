@@ -1,12 +1,11 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { HierarchicalContainer } from './hierarchical-container/hierarchical-container';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [HierarchicalContainer],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('frontend');
 }
