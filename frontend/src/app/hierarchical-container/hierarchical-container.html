@@ -1,6 +1,48 @@
 <div class="container py-4">
   <div class="d-flex align-items-center gap-2">
     <app-content-node label="Root project" class="flex-grow-1" />
-    <button class="btn btn-success text-white rounded-circle d-flex align-items-center justify-content-center p-0">+</button>
+    <button
+      type="button"
+      class="btn btn-success text-white rounded-circle d-flex align-items-center justify-content-center p-0 plus-button"
+      (click)="openModal()"
+    >+</button>
   </div>
 </div>
+
+@if (showModal) {
+  <div class="modal d-block" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add new node</h5>
+          <button type="button" class="btn-close" (click)="closeModal()"></button>
+        </div>
+        <form (ngSubmit)="onSubmit()">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="typeSelect" class="form-label">Type</label>
+              <select id="typeSelect" class="form-select" [(ngModel)]="selectedType" name="type">
+                <option value="project">Project</option>
+                <option value="sub-project">Sub-project</option>
+                <option value="task">Task</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="titleInput" class="form-label">Title</label>
+              <input id="titleInput" type="text" class="form-control" [(ngModel)]="title" name="title" />
+            </div>
+            <div class="mb-3">
+              <label for="descriptionTextarea" class="form-label">Description</label>
+              <textarea id="descriptionTextarea" class="form-control" rows="3" [(ngModel)]="description" name="description"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-success text-white px-3">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show" (click)="closeModal()"></div>
+}
