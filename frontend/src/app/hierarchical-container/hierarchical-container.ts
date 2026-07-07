@@ -1,7 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ContentNode } from '../content-node/content-node';
 import { FormsModule } from '@angular/forms';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-hierarchical-container',
@@ -31,7 +32,7 @@ export class HierarchicalContainer {
   }
 
   onSubmit(): void {
-    this.http.post('/addNode', {
+    this.http.post(`${environment.backendUrl}/addNode`, {
       type: this.selectedType,
       title: this.title,
       description: this.description,
