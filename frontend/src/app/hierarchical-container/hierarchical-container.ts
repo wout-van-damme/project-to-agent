@@ -32,7 +32,7 @@ export class HierarchicalContainer {
   }
 
   onSubmit(): void {
-    this.http.post(`${environment.backendUrl}/addNode`, {
+    this.http.post(`${environment.backendUrl}/node/addNode`, {
       parent_id: null,
       type: this.selectedType,
       title: this.title,
