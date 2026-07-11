@@ -1,6 +1,17 @@
 <div class="card border-0 bg-light mb-2">
   <div class="card-body py-3 px-3">
     <div class="d-flex align-items-center gap-2">
+      @if (hasChildren) {
+        <button
+          type="button"
+          class="btn p-0 border-0 bg-transparent toggle-button"
+          (click)="setExpand(!expanded)"
+        >
+          <span class="toggle-icon" [class.collapsed]="!expanded">&#9660;</span>
+        </button>
+      } @else {
+        <span class="toggle-spacer"></span>
+      }
       <span class="badge bg-secondary">{{ node().type }}</span>
       <span class="fw-bold fs-6">{{ node().title }}</span>
       @if (!isTask) {
@@ -13,7 +24,7 @@
     </div>
   </div>
 </div>
-@if (node().nodes.length > 0) {
+@if (hasChildren && expanded) {
   <div class="ms-4">
     @for (child of node().nodes; track child.id) {
       <app-content-node [node]="child" (nodeAdded)="nodeAdded.emit()" />

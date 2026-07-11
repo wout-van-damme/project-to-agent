@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, inject, input, output, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../environments/environment';
@@ -24,10 +24,15 @@ export class ContentNode {
   readonly node = input.required<Node>();
   readonly nodeAdded = output<void>();
 
+  expanded = true;
   showModal = false;
   selectedType = '';
   title = '';
   description = '';
+
+  get hasChildren(): boolean {
+    return this.node().nodes.length > 0;
+  }
 
   get isTask(): boolean {
     return this.node().type === 'task';
@@ -54,5 +59,9 @@ export class ContentNode {
       this.nodeAdded.emit();
       this.closeModal();
     });
+  }
+
+  setExpand(expanded: boolean): void {
+    this.expanded = expanded;
   }
 }

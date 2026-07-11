@@ -3,3 +3,29 @@
     height: 36px;
     font-size: 1.5rem;
 }
+
+.toggle-button {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.toggle-icon {
+    display: inline-block;
+    transition: transform 0.2s ease;
+    font-size: 0.75rem;
+    line-height: 1;
+
+    &.collapsed {
+        transform: rotate(-90deg);
+    }
+}
+
+.toggle-spacer {
+    width: 20px;
+    flex-shrink: 0;
+}
