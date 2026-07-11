@@ -24,7 +24,7 @@ export class ContentNode {
   readonly node = input.required<Node>();
   readonly nodeAdded = output<void>();
 
-  expanded = true;
+  expanded = false;
   showModal = false;
   selectedType = '';
   title = '';
