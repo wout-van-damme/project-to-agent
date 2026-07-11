@@ -9,7 +9,7 @@
   </div>
 
   @for (node of nodes(); track node.id) {
-    <app-content-node [node]="node" />
+    <app-content-node [node]="node" (nodeAdded)="loadNodes()" />
   }
 </div>
 
@@ -25,10 +25,8 @@
           <div class="modal-body">
             <div class="mb-3">
               <label for="typeSelect" class="form-label">Type</label>
-              <select id="typeSelect" class="form-select" [(ngModel)]="selectedType" name="type">
-                <option value="project">Project</option>
-                <option value="sub-project">Sub-project</option>
-                <option value="task">Task</option>
+              <select id="typeSelect" class="form-select" [(ngModel)]="selectedType" name="type" disabled>
+                <option value="workspace">Workspace</option>
               </select>
             </div>
             <div class="mb-3">

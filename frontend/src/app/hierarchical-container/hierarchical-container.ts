@@ -17,7 +17,7 @@ export class HierarchicalContainer implements OnInit {
   nodes = signal<Node[]>([]);
   showModal = false;
 
-  selectedType = 'project';
+  selectedType = 'workspace';
   title = '';
   description = '';
 
@@ -31,7 +31,7 @@ export class HierarchicalContainer implements OnInit {
   }
 
   openModal(): void {
-    this.selectedType = 'project';
+    this.selectedType = 'workspace';
     this.title = '';
     this.description = '';
     this.showModal = true;

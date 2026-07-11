@@ -9,9 +9,10 @@ class NodeService:
         self.db = db
 
     def create_node(self, data: NodeCreate) -> NodeModel:
+        node_type = "workspace" if data.parent_id is None else data.type
         node = NodeModel(
             parent_id=data.parent_id,
-            type=data.type,
+            type=node_type,
             title=data.title,
             description=data.description,
         )

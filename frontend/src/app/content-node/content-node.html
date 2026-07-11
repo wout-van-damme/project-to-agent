@@ -3,13 +3,58 @@
     <div class="d-flex align-items-center gap-2">
       <span class="badge bg-secondary">{{ node().type }}</span>
       <span class="fw-bold fs-6">{{ node().title }}</span>
+      @if (!isTask) {
+        <button
+          type="button"
+          class="btn btn-success text-white rounded-circle d-flex align-items-center justify-content-center p-0 plus-button ms-auto"
+          (click)="openModal()"
+        >+</button>
+      }
     </div>
   </div>
 </div>
 @if (node().nodes.length > 0) {
   <div class="ms-4">
     @for (child of node().nodes; track child.id) {
-      <app-content-node [node]="child" />
+      <app-content-node [node]="child" (nodeAdded)="nodeAdded.emit()" />
     }
   </div>
+}
+
+@if (showModal) {
+  <div class="modal d-block" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add new node</h5>
+          <button type="button" class="btn-close" (click)="closeModal()"></button>
+        </div>
+        <form (ngSubmit)="onSubmit()">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="typeSelect-{{ node().id }}" class="form-label">Type</label>
+              <select id="typeSelect-{{ node().id }}" class="form-select" [(ngModel)]="selectedType" name="type" required>
+                <option value="" disabled>Select type</option>
+                <option value="task">Task</option>
+                <option value="project">Project</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="titleInput-{{ node().id }}" class="form-label">Title</label>
+              <input id="titleInput-{{ node().id }}" type="text" class="form-control" [(ngModel)]="title" name="title" required />
+            </div>
+            <div class="mb-3">
+              <label for="descriptionTextarea-{{ node().id }}" class="form-label">Description</label>
+              <textarea id="descriptionTextarea-{{ node().id }}" class="form-control" rows="3" [(ngModel)]="description" name="description"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-success text-white px-3">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show" (click)="closeModal()"></div>
 }
