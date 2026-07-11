@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ContentNode } from '../content-node/content-node';
+import { ContentNode, Node } from '../content-node/content-node';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../environments/environment';
 
@@ -11,14 +11,24 @@ import { environment } from '../../environments/environment';
   templateUrl: './hierarchical-container.html',
   styleUrl: './hierarchical-container.scss'
 })
-export class HierarchicalContainer {
+export class HierarchicalContainer implements OnInit {
   private http = inject(HttpClient);
 
+  nodes = signal<Node[]>([]);
   showModal = false;
 
   selectedType = 'project';
   title = '';
   description = '';
+
+  ngOnInit(): void {
+    this.loadNodes();
+  }
+
+  loadNodes(): void {
+    this.http.get<Node[]>(`${environment.backendUrl}/nodes/getHierarchicalNodes`)
+      .subscribe((data) => this.nodes.set(data));
+  }
 
   openModal(): void {
     this.selectedType = 'project';
@@ -37,7 +47,9 @@ export class HierarchicalContainer {
       type: this.selectedType,
       title: this.title,
       description: this.description,
-    }).subscribe();
-    this.closeModal();
+    }).subscribe(() => {
+      this.loadNodes();
+      this.closeModal();
+    });
   }
 }

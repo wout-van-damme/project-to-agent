@@ -1,12 +1,16 @@
 <div class="container py-4">
-  <div class="d-flex align-items-center gap-2">
-    <app-content-node label="Root project" class="flex-grow-1" />
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h4 class="mb-0">Workspaces</h4>
     <button
       type="button"
       class="btn btn-success text-white rounded-circle d-flex align-items-center justify-content-center p-0 plus-button"
       (click)="openModal()"
     >+</button>
   </div>
+
+  @for (node of nodes(); track node.id) {
+    <app-content-node [node]="node" />
+  }
 </div>
 
 @if (showModal) {

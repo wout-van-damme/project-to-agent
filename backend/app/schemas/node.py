@@ -8,3 +8,13 @@ class NodeCreate(BaseModel):
     type: str
     title: str
     description: str
+
+
+class NodeResponse(BaseModel):
+    id: int
+    type: str
+    title: str
+    description: str
+    nodes: list["NodeResponse"] = []
+
+    model_config = {"from_attributes": True}

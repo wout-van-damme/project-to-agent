@@ -1,5 +1,13 @@
 import { Component, input } from '@angular/core';
 
+export interface Node {
+  id: number;
+  type: string;
+  title: string;
+  description: string;
+  nodes: Node[];
+}
+
 @Component({
   selector: 'app-content-node',
   standalone: true,
@@ -7,5 +15,5 @@ import { Component, input } from '@angular/core';
   styleUrl: './content-node.scss'
 })
 export class ContentNode {
-  readonly label = input('Content Node');
+  readonly node = input.required<Node>();
 }
