@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db_session
-from app.schemas.node import NodeCreate, NodeResponse
+from app.schemas.node import NodeCreate, NodeResponse, NodeUpdate
 from app.services.node_service import NodeService
 
 router = APIRouter()
@@ -19,6 +19,15 @@ def add_node(data: NodeCreate, db: Session = Depends(get_db_session)):
 def get_node(node_id: int, db: Session = Depends(get_db_session)):
     service = NodeService(db)
     node = service.get_node_by_id(node_id)
+    if node is None:
+        raise HTTPException(status_code=404, detail="Node not found")
+    return node
+
+
+@router.put("/node/updateNode/{node_id}", response_model=NodeResponse)
+def update_node(node_id: int, data: NodeUpdate, db: Session = Depends(get_db_session)):
+    service = NodeService(db)
+    node = service.update_node_description(node_id, data)
     if node is None:
         raise HTTPException(status_code=404, detail="Node not found")
     return node

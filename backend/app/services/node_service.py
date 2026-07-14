@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.models.node import NodeModel
-from app.schemas.node import NodeCreate, NodeResponse
+from app.schemas.node import NodeCreate, NodeResponse, NodeUpdate
 
 
 class NodeService:
@@ -34,6 +34,15 @@ class NodeService:
     def get_node_by_id(self, node_id: int) -> NodeResponse | None:
         node = self.db.query(NodeModel).filter(NodeModel.id == node_id).first()
         return self._to_response(node) if node else None
+
+    def update_node_description(self, node_id: int, data: NodeUpdate) -> NodeResponse | None:
+        node = self.db.query(NodeModel).filter(NodeModel.id == node_id).first()
+        if not node:
+            return None
+        node.description = data.description
+        self.db.commit()
+        self.db.refresh(node)
+        return self._to_response(node)
 
     def get_hierarchical_nodes(self) -> list[NodeResponse]:
         roots = self.db.query(NodeModel).filter(NodeModel.parent_id.is_(None)).all()

@@ -12,12 +12,46 @@
     <div class="d-flex align-items-center">
       <h1>{{ node.title }}</h1>
       <span class="badge bg-secondary">{{ node.type }}</span>  
+
+      @if (!editMode) {
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary edit-button ms-3"
+          (click)="startEdit(node.description)"
+        >
+          <i class="fa-solid fa-pen-to-square"></i> Edit
+        </button>
+      }
     </div>
 
     <hr>
 
-    @if (node.description) {
-      <div class="task-description" [innerHTML]="renderMarkdown(node.description)"></div>
-    }
+    <div class="task-description">
+      @if (editMode) {
+        <textarea
+          class="form-control description-textarea"
+          [(ngModel)]="editDescription"
+          rows="10"
+        ></textarea>
+        <div class="mt-2">
+          <button
+            type="button"
+            class="btn btn-sm btn-primary me-2"
+            (click)="saveEdit()"
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-secondary"
+            (click)="cancelEdit()"
+          >
+            Cancel
+          </button>
+        </div>
+      } @else {
+        <div [innerHTML]="renderMarkdown(node.description)"></div>
+      }
+    </div>
   }
 </div>

@@ -10,6 +10,10 @@ class NodeCreate(BaseModel):
     description: str
 
 
+class NodeUpdate(BaseModel):
+    description: str
+
+
 class NodeResponse(BaseModel):
     id: int
     type: str
