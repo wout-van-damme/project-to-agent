@@ -13,11 +13,11 @@
         <span class="toggle-spacer"></span>
       }
       <span class="badge bg-secondary">{{ node().type }}</span>
-      <span class="fw-bold fs-6">{{ node().title }}</span>
+      <a class="fw-bold fs-6 node-link" [routerLink]="['/node', node().id]">{{ node().title }}</a>
       @if (!isTask) {
         <button
           type="button"
-          class="btn btn-success text-white rounded-circle d-flex align-items-center justify-content-center p-0 plus-button ms-auto"
+          class="btn btn-success text-white rounded-circle d-flex align-items-center justify-content-center p-0 plus-button"
           (click)="openModal()"
         >+</button>
       }

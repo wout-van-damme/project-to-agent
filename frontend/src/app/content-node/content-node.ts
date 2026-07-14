@@ -1,6 +1,7 @@
 import { Component, inject, input, output, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { environment } from '../../environments/environment';
 
 export interface Node {
@@ -14,7 +15,7 @@ export interface Node {
 @Component({
   selector: 'app-content-node',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './content-node.html',
   styleUrl: './content-node.scss'
 })

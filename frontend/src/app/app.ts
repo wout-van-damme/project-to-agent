@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { HierarchicalContainer } from './hierarchical-container/hierarchical-container';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [HierarchicalContainer],
+  imports: [RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
