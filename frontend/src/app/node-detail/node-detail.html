@@ -1,4 +1,3 @@
-<h1>TEST1</h1>
 <div class="container py-4">
   <button
     type="button"
@@ -9,14 +8,16 @@
   </button>
 
   @if ((node$ | async); as node) {
-    <div class="card">
-      <div class="card-body">
-        <span class="badge bg-secondary mb-2">{{ node.type }}</span>
-        <h3>{{ node.title }}</h3>
-        @if (node.description) {
-          <div class="text-muted mt-3" [innerHTML]="renderMarkdown(node.description)"></div>
-        }
-      </div>
+    
+    <div class="d-flex align-items-center">
+      <h1>{{ node.title }}</h1>
+      <span class="badge bg-secondary">{{ node.type }}</span>  
     </div>
+
+    <hr>
+
+    @if (node.description) {
+      <div class="task-description" [innerHTML]="renderMarkdown(node.description)"></div>
+    }
   }
 </div>
