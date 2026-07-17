@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.models.node import NodeModel
-from app.schemas.node import NodeCreate, NodeResponse, NodeUpdate
+from app.schemas.node import CommentInfo, NodeCreate, NodeResponse, NodeUpdate
 
 
 class NodeService:
@@ -29,6 +29,10 @@ class NodeService:
             title=node.title,
             description=node.description,
             nodes=[NodeService._to_response(child) for child in node.children],
+            comments=[
+                CommentInfo(id=c.id, content=c.content, created_at=c.created_at)
+                for c in node.comments
+            ],
         )
 
     def get_node_by_id(self, node_id: int) -> NodeResponse | None:

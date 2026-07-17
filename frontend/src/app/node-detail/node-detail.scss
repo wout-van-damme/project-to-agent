@@ -1,3 +1,5 @@
+@use 'constants' as *;
+
 .back-button {
     text-decoration: none;
     color: #333;
@@ -24,4 +26,10 @@
     width: 100%;
     min-height: 200px;
     font-family: monospace;
+}
+
+.comments-section {
+    border-top: 1px solid #{$gray};
+    margin-top: 6rem;
+    padding-top: 2rem;
 }

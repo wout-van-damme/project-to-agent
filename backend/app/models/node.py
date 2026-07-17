@@ -15,3 +15,4 @@ class NodeModel(Base):
 
     children = relationship("NodeModel", back_populates="parent", lazy="selectin")
     parent = relationship("NodeModel", back_populates="children", remote_side="NodeModel.id", lazy="noload")
+    comments = relationship("CommentModel", back_populates="node", lazy="selectin")

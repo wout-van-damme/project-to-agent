@@ -53,5 +53,39 @@
         <div [innerHTML]="renderMarkdown(node.description)"></div>
       }
     </div>
+
+    <div class="comments-section">
+      <h4>Comments</h4>
+
+      <div class="mb-4">
+        @for (comment of (comments$ | async); track comment.id) {
+          <div class="card comment-card mb-2">
+            <div class="card-body py-2 px-3">
+              <small class="text-muted">{{ comment.created_at | date:'medium' }}</small>
+              <div>{{ comment.content }}</div>
+            </div>
+          </div>
+        } @empty {
+          <p class="text-muted">No comments yet.</p>
+        }
+      </div>
+
+      <div>
+        <textarea
+          class="form-control mb-2"
+          [(ngModel)]="newComment"
+          placeholder="Write a comment..."
+          rows="3"
+        ></textarea>
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          (click)="addComment()"
+          [disabled]="!newComment.trim()"
+        >
+          <i class="fa-solid fa-plus"></i> Add Comment
+        </button>
+      </div>
+    </div>
   }
 </div>

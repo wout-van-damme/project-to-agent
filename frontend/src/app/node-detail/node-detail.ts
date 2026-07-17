@@ -5,14 +5,22 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { marked } from 'marked';
 import { Node } from '../content-node/content-node';
 import { environment } from '../../environments/environment';
-import { Observable } from 'rxjs';
-import { AsyncPipe } from '@angular/common';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
+export interface Comment {
+  id: number;
+  node_id: number;
+  creator: string;
+  content: string;
+  created_at: string;
+}
 
 @Component({
   selector: 'app-node-detail',
   standalone: true,
-  imports: [AsyncPipe, FormsModule],
+  imports: [AsyncPipe, FormsModule, DatePipe],
   templateUrl: './node-detail.html',
   styleUrl: './node-detail.scss'
 })
@@ -23,8 +31,10 @@ export class NodeDetail implements OnInit {
   private sanitizer = inject(DomSanitizer);
 
   node$: Observable<Node> | undefined;
+  comments$: BehaviorSubject<Comment[]> = new BehaviorSubject<Comment[]>([]);
   editMode = false;
   editDescription = '';
+  newComment = '';
   currentNodeId: number | null = null;
 
   constructor(private cdr: ChangeDetectorRef) {}
@@ -34,7 +44,32 @@ export class NodeDetail implements OnInit {
     if (id) {
       this.currentNodeId = Number(id);
       this.node$ = this.http.get<Node>(`${environment.backendUrl}/node/getNode/${id}`);
+      this.loadComments();
     }
+  }
+
+  loadComments(): void {
+    if (this.currentNodeId === null) {
+      return;
+    };
+    this.http.get<Comment[]>(
+      `${environment.backendUrl}/node/${this.currentNodeId}/getComments`
+    ).subscribe(comments => {
+      this.comments$.next(comments);
+    });
+  }
+
+  addComment(): void {
+    if (this.currentNodeId === null || !this.newComment.trim()) {
+      return
+    };
+    this.http.post<Comment>(
+      `${environment.backendUrl}/node/${this.currentNodeId}/addComment`,
+      { content: this.newComment }
+    ).subscribe(() => {
+      this.newComment = '';
+      this.loadComments();
+    });
   }
 
   goBack(): void {
