@@ -13,7 +13,7 @@ class CommentService:
         node = self.db.query(NodeModel).filter(NodeModel.id == node_id).first()
         if not node:
             return None
-        comment = CommentModel(node_id=node_id, content=data.content)
+        comment = CommentModel(node_id=node_id, sender="You", content=data.content)
         self.db.add(comment)
         self.db.commit()
         self.db.refresh(comment)
@@ -30,6 +30,7 @@ class CommentService:
             CommentResponse(
                 id=c.id,
                 node_id=c.node_id,
+                sender=c.sender,
                 content=c.content,
                 created_at=c.created_at,
             )

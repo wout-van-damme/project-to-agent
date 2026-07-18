@@ -5,7 +5,7 @@
     @for (comment of (comments$ | async); track comment.id) {
       <div class="card comment-card mb-2">
         <div class="card-body py-2 px-3">
-          <small class="text-muted">{{ comment.created_at | date:'medium' }}</small>
+          <span class="sender">{{ comment.sender }}</span> <small class="text-muted"> - {{ comment.created_at | date:'medium' }}</small>
           <div>{{ comment.content }}</div>
         </div>
       </div>

@@ -30,7 +30,7 @@ class NodeService:
             description=node.description,
             nodes=[NodeService._to_response(child) for child in node.children],
             comments=[
-                CommentInfo(id=c.id, content=c.content, created_at=c.created_at)
+                CommentInfo(id=c.id, sender=c.sender, content=c.content, created_at=c.created_at)
                 for c in node.comments
             ],
         )

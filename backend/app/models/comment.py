@@ -11,6 +11,7 @@ class CommentModel(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     node_id = Column(Integer, ForeignKey("nodes.id"), nullable=False)
+    sender = Column(String, default="You")
     content = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
 

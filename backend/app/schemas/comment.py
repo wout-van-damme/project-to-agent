@@ -10,6 +10,7 @@ class CommentCreate(BaseModel):
 class CommentResponse(BaseModel):
     id: int
     node_id: int
+    sender: str
     content: str
     created_at: datetime
 

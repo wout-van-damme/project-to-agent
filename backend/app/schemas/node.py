@@ -17,6 +17,7 @@ class NodeUpdate(BaseModel):
 
 class CommentInfo(BaseModel):
     id: int
+    sender: str
     content: str
     created_at: datetime
 
