@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.models.comment import CommentModel
 from app.models.node import NodeModel
-from app.schemas.comment import CommentCreate, CommentResponse
+from app.schemas.comment import CommentCreate, CommentResponse, CommentUpdate
 
 
 class CommentService:
@@ -36,3 +36,20 @@ class CommentService:
             )
             for c in comments
         ]
+
+    def update_comment(self, comment_id: int, data: CommentUpdate) -> CommentModel | None:
+        comment = self.db.query(CommentModel).filter(CommentModel.id == comment_id).first()
+        if not comment:
+            return None
+        comment.content = data.content
+        self.db.commit()
+        self.db.refresh(comment)
+        return comment
+
+    def delete_comment(self, comment_id: int) -> bool:
+        comment = self.db.query(CommentModel).filter(CommentModel.id == comment_id).first()
+        if not comment:
+            return False
+        self.db.delete(comment)
+        self.db.commit()
+        return True

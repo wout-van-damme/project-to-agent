@@ -20,6 +20,8 @@ export class CommentSection implements OnInit {
 
   comments$: BehaviorSubject<Comment[]> = new BehaviorSubject<Comment[]>([]);
   newComment = '';
+  editingCommentId: number | null = null;
+  editingContent = '';
 
   ngOnInit(): void {
     this.loadComments();
@@ -42,6 +44,38 @@ export class CommentSection implements OnInit {
       { content: this.newComment }
     ).subscribe(() => {
       this.newComment = '';
+      this.loadComments();
+    });
+  }
+
+  startEdit(comment: Comment): void {
+    this.editingCommentId = comment.id;
+    this.editingContent = comment.content;
+  }
+
+  cancelEdit(): void {
+    this.editingCommentId = null;
+    this.editingContent = '';
+  }
+
+  saveEdit(commentId: number): void {
+    if (!this.editingContent.trim()) {
+      return;
+    }
+    this.http.put<Comment>(
+      `${environment.backendUrl}/comment/${commentId}`,
+      { content: this.editingContent }
+    ).subscribe(() => {
+      this.editingCommentId = null;
+      this.editingContent = '';
+      this.loadComments();
+    });
+  }
+
+  deleteComment(commentId: number): void {
+    this.http.delete(
+      `${environment.backendUrl}/comment/${commentId}`
+    ).subscribe(() => {
       this.loadComments();
     });
   }

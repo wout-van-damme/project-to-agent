@@ -7,6 +7,10 @@ class CommentCreate(BaseModel):
     content: str
 
 
+class CommentUpdate(BaseModel):
+    content: str
+
+
 class CommentResponse(BaseModel):
     id: int
     node_id: int
