@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { Comment } from './comment.model';
 import { environment } from '../../environments/environment';
+import { marked } from 'marked';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-comment',
@@ -15,6 +17,7 @@ import { environment } from '../../environments/environment';
 })
 export class CommentSection implements OnInit {
   private http = inject(HttpClient);
+  private sanitizer = inject(DomSanitizer);
 
   nodeId = input.required<number>();
 
@@ -78,5 +81,10 @@ export class CommentSection implements OnInit {
     ).subscribe(() => {
       this.loadComments();
     });
+  }
+
+    renderMarkdown(text: string): SafeHtml {
+    const html = marked.parse(text) as string;
+    return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 }

@@ -53,7 +53,7 @@
               </button>
             </div>
           } @else {
-            <div>{{ comment.content }}</div>
+            <div [innerHTML]="renderMarkdown(comment.content)"></div>
           }
         </div>
       </div>
