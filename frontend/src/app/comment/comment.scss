@@ -1,0 +1,7 @@
+@use 'constants' as *;
+
+.comments-section {
+    border-top: 1px solid #{$gray};
+    margin-top: 6rem;
+    padding-top: 2rem;
+}
