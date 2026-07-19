@@ -14,6 +14,7 @@ export class AgentModal {
 
   name = '';
   provider = 'ollama';
+  modelName = '';
   url = '';
   apiKey = '';
 
