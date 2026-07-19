@@ -1,11 +1,13 @@
-<div class="container py-4">
-  <div class="d-flex align-items-center justify-content-between mb-3">
-    <h4 class="mb-0">Workspaces</h4>
-    <button
-      type="button"
-      class="btn btn-success text-white rounded-circle d-flex align-items-center justify-content-center p-0 plus-button"
-      (click)="openModal()"
-    ><i class="fa-solid fa-plus"></i></button>
+<div class="p-4">
+  <div class="d-flex align-items-center mb-3">
+    <h1 class="mb-0">Workspaces</h1>
+    <div class="ms-3">
+      <button
+        type="button"
+        class="btn btn-success text-white rounded-circle d-flex align-items-center justify-content-center p-0 plus-button"
+        (click)="openModal()"
+      ><i class="fa-solid fa-plus"></i></button>
+    </div>
   </div>
 
   @for (node of nodes(); track node.id) {
