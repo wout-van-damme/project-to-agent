@@ -1,12 +1,12 @@
 <nav class="sidebar d-flex flex-column p-3">
   <ul>
     <li>
-      <a class="sidebar-link" routerLink="/">
+      <a class="sidebar-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
         <i class="fa-solid fa-hammer"></i> Workspaces
       </a>
     </li>
     <li>
-      <a class="sidebar-link" routerLink="/configure-agents">
+      <a class="sidebar-link" routerLink="/configure-agents" routerLinkActive="active">
         <i class="fa-solid fa-robot"></i> Configure Agents
       </a>
     </li>
