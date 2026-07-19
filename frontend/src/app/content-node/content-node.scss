@@ -1,9 +1,10 @@
 @use 'constants' as *;
 
 .plus-button {
-    width: 36px;
-    height: 36px;
-    font-size: 1.5rem;
+    width: 20px;
+    height: 20px;
+    font-size: 0.6rem;
+    align-items: center;
 }
 
 .toggle-button {
@@ -52,5 +53,5 @@
 
 .card-body {
     background-color: #{$gray};
-    border-radius: 10px;
+    border-radius: #{$border-radius};
 }

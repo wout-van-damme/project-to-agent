@@ -1,0 +1,34 @@
+@use 'sass:color';
+@use 'constants' as *;
+
+.sidebar {
+  width: 300px;
+  height: 100vh;
+  background-color: $gray;
+}
+
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+i {
+  margin-right: 1rem;
+}
+
+.sidebar-link {
+  display: block;
+  padding: 1rem 1.5rem;
+  border-radius: #{$border-radius};
+  color: #333;
+  text-decoration: none;
+
+  &:hover {
+    background-color: color.adjust($gray, $lightness: -7%);
+  }
+
+  &.active {
+    background-color: color.adjust($gray, $lightness: -12.5%);
+    font-weight: 600;
+  }
+}
