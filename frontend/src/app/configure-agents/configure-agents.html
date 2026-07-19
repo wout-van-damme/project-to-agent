@@ -1,3 +1,14 @@
 <div class="p-4">
-  <h1>Configure Agents</h1>
+  <div class="d-flex align-items-center mb-3">
+    <h1 class="mb-0">Configure Agents</h1>
+    <div class="ms-3">
+      <button
+        type="button"
+        class="btn btn-success text-white rounded-circle d-flex align-items-center justify-content-center p-0 plus-button"
+        (click)="openModal()"
+      ><i class="fa-solid fa-plus"></i></button>
+    </div>
+  </div>
 </div>
+
+<app-agent-modal [show]="showModal" (closed)="closeModal()" />

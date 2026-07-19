@@ -1,0 +1,45 @@
+@if (show()) {
+  <div class="modal d-block" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Agent</h5>
+          <button type="button" class="btn-close" (click)="close()"></button>
+        </div>
+        <form (ngSubmit)="onSubmit()">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="agentName" class="form-label">Name</label>
+              <input id="agentName" type="text" class="form-control" [(ngModel)]="name" name="name" />
+            </div>
+            <div class="mb-3">
+              <label for="agentProvider" class="form-label">Provider</label>
+              <select id="agentProvider" class="form-select" [(ngModel)]="provider" name="provider">
+                @for (p of providers; track p.value) {
+                  <option [value]="p.value">{{ p.label }}</option>
+                }
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="agentUrl" class="form-label">URL</label>
+              <input id="agentUrl" type="text" class="form-control" [(ngModel)]="url" name="url" />
+            </div>
+            <div class="mb-3">
+              <label for="agentApiKey" class="form-label">API key <span class="text-muted">(optional)</span></label>
+              <input id="agentApiKey" type="password" class="form-control" [(ngModel)]="apiKey" name="apiKey" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Tools <span class="text-muted">(WIP)</span></label>
+              <div class="form-text text-muted">Not implemented yet</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
+            <button type="submit" class="btn btn-success text-white px-3">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show" (click)="close()"></div>
+}
