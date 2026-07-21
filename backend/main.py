@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
 from app.api.routes.nodes import router as nodes_router
 from app.api.routes.comments import router as comments_router
+from app.api.routes.agents import router as agents_router
 
 Base.metadata.create_all(engine)
 
@@ -19,6 +20,7 @@ api.add_middleware(
 
 api.include_router(nodes_router)
 api.include_router(comments_router)
+api.include_router(agents_router)
 
 
 @api.get("/")

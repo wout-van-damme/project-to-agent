@@ -1,5 +1,7 @@
-import { Component, input, output } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, inject, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-agent-modal',
@@ -9,6 +11,8 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './agent-modal.scss'
 })
 export class AgentModal {
+  private http = inject(HttpClient);
+
   show = input(false);
   closed = output<void>();
 
@@ -27,6 +31,24 @@ export class AgentModal {
   }
 
   onSubmit(): void {
-    this.closed.emit();
+    this.http.post<Comment>(
+          `${environment.backendUrl}/agents/addAgent`,
+          {
+            id: '',
+            name: this.name,
+            provider: this.provider,
+            modelName: this.modelName,
+            url: this.url,
+            // TODO: apiKey: this.apiKey SHOULD BE ENCRYPTED
+            apiKey: ''
+          }
+        ).subscribe(() => {
+            this.name = '';
+            this.provider = 'ollama';
+            this.modelName = '';
+            this.url = '';
+            this.apiKey = '';
+            this.closed.emit();
+        });
   }
 }
