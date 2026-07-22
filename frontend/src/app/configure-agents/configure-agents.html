@@ -9,6 +9,11 @@
       ><i class="fa-solid fa-plus"></i></button>
     </div>
   </div>
+
+
+  @for (agentConfig of (agentConfigs$ | async); track agentConfig.id) {
+    <p>TEST</p>
+  }
 </div>
 
 <app-agent-modal [show]="showModal" (closed)="closeModal()" />
