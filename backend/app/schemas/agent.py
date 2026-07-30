@@ -9,6 +9,13 @@ class AgentCreate(BaseModel):
     apiKey: str
 
 
+class AgentUpdate(BaseModel):
+    name: str | None = None
+    provider: str | None = None
+    modelName: str | None = None
+    url: str | None = None
+    apiKey: str | None = None
+
 
 class AgentResponse(BaseModel):
     id: int

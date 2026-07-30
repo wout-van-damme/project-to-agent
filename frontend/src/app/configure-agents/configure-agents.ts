@@ -5,11 +5,12 @@ import { environment } from '../../environments/environment';
 import { AgentConfig } from './configure-agents.model';
 import { BehaviorSubject } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
+import { AgentDetailComponent } from './agent-detail/agent-detail.component';
 
 @Component({
   selector: 'app-configure-agents',
   standalone: true,
-  imports: [AgentModal, AsyncPipe],
+  imports: [AgentModal, AsyncPipe, AgentDetailComponent],
   templateUrl: './configure-agents.html',
   styleUrl: './configure-agents.scss'
 })
@@ -33,11 +34,21 @@ export class ConfigureAgents {
     this.showModal = false;
   }
 
+  onAgentUpdated(): void {
+    this.loadAgentConfigs();
+  }
 
-  loadAgentConfigs(): void {
+  onAgentDeleted(agentId: number): void {
+    const current = this.agentConfigs$.value;
+    this.agentConfigs$.next(current.filter(a => a.id !== agentId));
+  }
+
+
+loadAgentConfigs(): void {
     this.http.get<[AgentConfig]>(`${environment.backendUrl}/agents/getAllAgents`)
       .subscribe((data) => {
-        this.agentConfigs$.next(data);
+        const sorted = [...data].sort((a, b) => a.id - b.id);
+        this.agentConfigs$.next(sorted);
       });
   }
 }

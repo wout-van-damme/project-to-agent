@@ -12,7 +12,11 @@
 
 
   @for (agentConfig of (agentConfigs$ | async); track agentConfig.id) {
-    <p>TEST</p>
+    <app-agent-detail 
+      [agent]="agentConfig" 
+      (agentUpdated)="onAgentUpdated()" 
+      (agentDeleted)="onAgentDeleted($event)">
+    </app-agent-detail>
   }
 </div>
 

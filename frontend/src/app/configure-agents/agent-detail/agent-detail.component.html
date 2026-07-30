@@ -1,0 +1,69 @@
+<div class="card mb-2 agent-detail-card">
+  <div class="card-body py-2 px-3">
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <h6 class="mb-0 fw-bold">{{ agent.name }}</h6>
+      <span class="badge bg-primary">{{ agent.provider }}</span>
+    </div>
+    <div class="row g-2 mb-2">
+      <div class="col-6">
+        <div class="d-flex flex-column gap-1">
+          <span class="text-muted small fw-bold text-uppercase">Model</span>
+          <span class="text-body">{{ agent.modelName }}</span>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="d-flex flex-column gap-1">
+          <span class="text-muted small fw-bold text-uppercase">URL</span>
+          <span class="text-body text-break">{{ agent.url }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-end gap-2 mt-2">
+      <button class="btn btn-sm btn-outline-danger" (click)="deleteAgent()">Delete</button>
+      <button class="btn btn-sm btn-outline-primary" (click)="openEditModal()">Edit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" tabindex="-1" [class.show]="showEditModal" [style.display]="showEditModal ? 'block' : 'none'" role="dialog" *ngIf="showEditModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Agent</h5>
+        <button type="button" class="btn-close" (click)="closeEditModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="saveEdit()">
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" [(ngModel)]="editData.name" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Provider</label>
+            <select class="form-select" [(ngModel)]="editData.provider" name="provider" required>
+              <option *ngFor="let p of providers" [value]="p.value">{{ p.label }}</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Model Name</label>
+            <input type="text" class="form-control" [(ngModel)]="editData.modelName" name="modelName" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">URL</label>
+            <input type="text" class="form-control" [(ngModel)]="editData.url" name="url" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">API Key</label>
+            <input type="password" class="form-control" [(ngModel)]="editData.apiKey" name="apiKey" placeholder="Leave empty to keep current">
+          </div>
+          <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade show" *ngIf="showEditModal"></div>
