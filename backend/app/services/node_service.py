@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 
+from app.models.agent import AgentModel
 from app.models.node import NodeModel
-from app.schemas.node import CommentInfo, NodeCreate, NodeResponse, NodeUpdate
+from app.schemas.node import AgentInfo, CommentInfo, NodeCreate, NodeResponse, NodeUpdate
 
 
 class NodeService:
@@ -16,6 +17,9 @@ class NodeService:
             title=data.title,
             description=data.description,
         )
+        if data.agent_ids:
+            agents = self.db.query(AgentModel).filter(AgentModel.id.in_(data.agent_ids)).all()
+            node.agents = agents
         self.db.add(node)
         self.db.commit()
         self.db.refresh(node)
@@ -33,6 +37,7 @@ class NodeService:
                 CommentInfo(id=c.id, sender=c.sender, content=c.content, created_at=c.created_at)
                 for c in node.comments
             ],
+            agents=[AgentInfo(id=a.id, name=a.name) for a in node.agents],
         )
 
     def get_node_by_id(self, node_id: int) -> NodeResponse | None:

@@ -4,11 +4,19 @@ from typing import Optional
 from pydantic import BaseModel
 
 
+class AgentInfo(BaseModel):
+    id: int
+    name: str
+
+    model_config = {"from_attributes": True}
+
+
 class NodeCreate(BaseModel):
     parent_id: Optional[int] = None
     type: str
     title: str
     description: str
+    agent_ids: list[int] = []
 
 
 class NodeUpdate(BaseModel):
@@ -31,5 +39,6 @@ class NodeResponse(BaseModel):
     description: str
     nodes: list["NodeResponse"] = []
     comments: list[CommentInfo] = []
+    agents: list[AgentInfo] = []
 
     model_config = {"from_attributes": True}

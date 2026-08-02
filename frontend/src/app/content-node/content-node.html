@@ -44,7 +44,7 @@
           <div class="modal-body">
             <div class="mb-3">
               <label for="typeSelect-{{ node().id }}" class="form-label">Type</label>
-              <select id="typeSelect-{{ node().id }}" class="form-select" [(ngModel)]="selectedType" name="type" required>
+              <select id="typeSelect-{{ node().id }}" class="form-select" [(ngModel)]="selectedType" name="type" required (change)="onTypeChange()">
                 <option value="" disabled>Select type</option>
                 <option value="task">Task</option>
                 <option value="project">Project</option>
@@ -54,6 +54,38 @@
               <label for="titleInput-{{ node().id }}" class="form-label">Title</label>
               <input id="titleInput-{{ node().id }}" type="text" class="form-control" [(ngModel)]="title" name="title" required />
             </div>
+            @if (isTaskTypeSelected) {
+              <div class="mb-3">
+                <label class="form-label">Agents</label>
+                @for (agentId of selectedAgentIds; track trackByFn($index); let i = $index) {
+                  <div class="d-flex align-items-center gap-2 mb-2">
+                    <select
+                      class="form-select"
+                      [(ngModel)]="selectedAgentIds[i]"
+                      [name]="'agent-' + node().id + '-' + i"
+                      required
+                    >
+                      <option [ngValue]="null" disabled>Select agent</option>
+                      @for (agent of agents; track agent.id) {
+                        <option [ngValue]="agent.id">{{ agent.name }}</option>
+                      }
+                    </select>
+                    @if (selectedAgentIds.length > 1) {
+                      <button
+                        type="button"
+                        class="btn btn-outline-danger remove-agent-button"
+                        (click)="removeAgentSelector(i)"
+                      ><i class="fa-solid fa-minus"></i></button>
+                    }
+                  </div>
+                }
+                <button
+                  type="button"
+                  class="btn btn-outline-success btn-sm"
+                  (click)="addAgentSelector()"
+                ><i class="fa-solid fa-plus"></i> Add agent</button>
+              </div>
+            }
             <div class="mb-3">
               <label for="descriptionTextarea-{{ node().id }}" class="form-label">Description</label>
               <textarea id="descriptionTextarea-{{ node().id }}" class="form-control" rows="3" [(ngModel)]="description" name="description"></textarea>
@@ -61,7 +93,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
-            <button type="submit" class="btn btn-success text-white px-3">Submit</button>
+            <button type="submit" class="btn btn-success text-white px-3" [disabled]="isTaskTypeSelected && !isTaskFormValid">Submit</button>
           </div>
         </form>
       </div>

@@ -13,4 +13,6 @@ class AgentModel(Base):
     modelName = Column(String)
     url = Column(String)
     apiKey = Column(String)
+
+    nodes = relationship("NodeModel", secondary="node_agents", back_populates="agents")
     

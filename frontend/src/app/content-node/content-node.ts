@@ -1,4 +1,4 @@
-import { Component, inject, input, output, signal } from '@angular/core';
+import { Component, inject, input, OnInit, output, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -10,6 +10,16 @@ export interface Node {
   title: string;
   description: string;
   nodes: Node[];
+  agents?: AgentConfig[];
+}
+
+export interface AgentConfig {
+  id: number;
+  name: string;
+  provider: string;
+  modelName: string;
+  url: string;
+  apiKey: string;
 }
 
 @Component({
@@ -30,6 +40,8 @@ export class ContentNode {
   selectedType = '';
   title = '';
   description = '';
+  agents: AgentConfig[] = [];
+  selectedAgentIds: (number | null)[] = [];
 
   get hasChildren(): boolean {
     return this.node().nodes.length > 0;
@@ -39,10 +51,20 @@ export class ContentNode {
     return this.node().type === 'task';
   }
 
+  get isTaskTypeSelected(): boolean {
+    return this.selectedType === 'task';
+  }
+
+  get isTaskFormValid(): boolean {
+    return this.title.trim().length > 0 && this.selectedAgentIds.length > 0;
+  }
+
   openModal(): void {
     this.selectedType = '';
     this.title = '';
     this.description = '';
+    this.selectedAgentIds = [null];
+    this.loadAgents();
     this.showModal = true;
   }
 
@@ -50,12 +72,42 @@ export class ContentNode {
     this.showModal = false;
   }
 
+  loadAgents(): void {
+    if (this.agents.length > 0) {
+      return;
+    }
+    this.http.get<AgentConfig[]>(`${environment.backendUrl}/agents/getAllAgents`)
+      .subscribe((data) => {
+        this.agents = [...data].sort((a, b) => a.name.localeCompare(b.name));
+      });
+  }
+
+  onTypeChange(): void {
+    if (this.selectedType !== 'task') {
+      this.selectedAgentIds = [];
+    }
+  }
+
+  addAgentSelector(): void {
+    this.selectedAgentIds.push(null);
+  }
+
+  removeAgentSelector(index: number): void {
+    this.selectedAgentIds.splice(index, 1);
+  }
+
+  trackByFn(index: number): number {
+    return index;
+  }
+
   onSubmit(): void {
+    const agentIds = this.selectedAgentIds.filter((id): id is number => id !== null);
     this.http.post(`${environment.backendUrl}/node/addNode`, {
       parent_id: this.node().id,
       type: this.selectedType,
       title: this.title,
       description: this.description,
+      agent_ids: this.selectedType === 'task' ? agentIds : [],
     }).subscribe(() => {
       this.nodeAdded.emit();
       this.closeModal();
