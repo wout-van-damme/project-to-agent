@@ -4,6 +4,17 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { environment } from '../../environments/environment';
 
+const EXPANDED_NODES_KEY = 'expandedNodes';
+
+function getExpandedNodeIds(): Set<number> {
+  try {
+    const raw = localStorage.getItem(EXPANDED_NODES_KEY);
+    return new Set<number>(raw ? JSON.parse(raw) : []);
+  } catch {
+    return new Set();
+  }
+}
+
 export interface Node {
   id: number;
   type: string;
@@ -29,13 +40,17 @@ export interface AgentConfig {
   templateUrl: './content-node.html',
   styleUrl: './content-node.scss'
 })
-export class ContentNode {
+export class ContentNode implements OnInit {
   private http = inject(HttpClient);
 
   readonly node = input.required<Node>();
   readonly nodeAdded = output<void>();
 
   expanded = false;
+
+  ngOnInit(): void {
+    this.expanded = this.hasChildren && getExpandedNodeIds().has(this.node().id);
+  }
   showModal = false;
   selectedType = '';
   title = '';
@@ -116,5 +131,12 @@ export class ContentNode {
 
   setExpand(expanded: boolean): void {
     this.expanded = expanded;
+    const ids = getExpandedNodeIds();
+    if (expanded) {
+      ids.add(this.node().id);
+    } else {
+      ids.delete(this.node().id);
+    }
+    localStorage.setItem(EXPANDED_NODES_KEY, JSON.stringify([...ids]));
   }
 }
