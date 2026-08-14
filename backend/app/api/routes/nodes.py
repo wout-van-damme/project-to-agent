@@ -27,7 +27,7 @@ def get_node(node_id: int, db: Session = Depends(get_db_session)):
 @router.put("/node/updateNode/{node_id}", response_model=NodeResponse)
 def update_node(node_id: int, data: NodeUpdate, db: Session = Depends(get_db_session)):
     service = NodeService(db)
-    node = service.update_node_description(node_id, data)
+    node = service.update_node(node_id, data)
     if node is None:
         raise HTTPException(status_code=404, detail="Node not found")
     return node

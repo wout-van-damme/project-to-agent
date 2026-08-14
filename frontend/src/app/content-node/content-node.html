@@ -56,34 +56,18 @@
             </div>
             @if (isTaskTypeSelected) {
               <div class="mb-3">
-                <label class="form-label">Agents</label>
-                @for (agentId of selectedAgentIds; track trackByFn($index); let i = $index) {
-                  <div class="d-flex align-items-center gap-2 mb-2">
-                    <select
-                      class="form-select"
-                      [(ngModel)]="selectedAgentIds[i]"
-                      [name]="'agent-' + node().id + '-' + i"
-                      required
-                    >
-                      <option [ngValue]="null" disabled>Select agent</option>
-                      @for (agent of agents; track agent.id) {
-                        <option [ngValue]="agent.id">{{ agent.name }}</option>
-                      }
-                    </select>
-                    @if (selectedAgentIds.length > 1) {
-                      <button
-                        type="button"
-                        class="btn btn-outline-danger remove-agent-button"
-                        (click)="removeAgentSelector(i)"
-                      ><i class="fa-solid fa-minus"></i></button>
-                    }
-                  </div>
-                }
-                <button
-                  type="button"
-                  class="btn btn-outline-success btn-sm"
-                  (click)="addAgentSelector()"
-                ><i class="fa-solid fa-plus"></i> Add agent</button>
+                <label class="form-label">Agent</label>
+                <select
+                  class="form-select"
+                  [(ngModel)]="selectedAgentId"
+                  name="agent"
+                  required
+                >
+                  <option [ngValue]="null" disabled>Select agent</option>
+                  @for (agent of agents; track agent.id) {
+                    <option [ngValue]="agent.id">{{ agent.name }}</option>
+                  }
+                </select>
               </div>
             }
             <div class="mb-3">

@@ -3,9 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { marked } from 'marked';
-import { Node } from '../content-node/content-node';
+import { Node, AgentConfig } from '../content-node/content-node';
 import { environment } from '../../environments/environment';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable, of } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CommentSection } from '../comment/comment';
@@ -26,6 +26,8 @@ export class NodeDetail implements OnInit {
   node$: Observable<Node> | undefined;
   editMode = false;
   editDescription = '';
+  editAgentId: number | null = null;
+  agents$: BehaviorSubject<AgentConfig[]> = new BehaviorSubject<AgentConfig[]>([]);
   currentNodeId: number | null = null;
 
   constructor(private cdr: ChangeDetectorRef) {}
@@ -47,21 +49,32 @@ export class NodeDetail implements OnInit {
     return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 
-  startEdit(description: string): void {
-    this.editDescription = description;
+  startEdit(node: Node): void {
+    this.editDescription = node.description;
+    this.editAgentId = node.agent ? node.agent.id : null;
+    this.loadAgents();
     this.editMode = true;
+  }
+
+  loadAgents(): void {
+    this.http.get<AgentConfig[]>(`${environment.backendUrl}/agents/getAllAgents`).pipe(
+      map(data => [...data].sort((a, b) => a.name.localeCompare(b.name)))
+    ).subscribe((agents) => {
+      this.agents$.next(agents);
+    })
   }
 
   cancelEdit(): void {
     this.editMode = false;
     this.editDescription = '';
+    this.editAgentId = null;
   }
 
   saveEdit(): void {
     if (this.currentNodeId === null) return;
     this.http.put<Node>(
       `${environment.backendUrl}/node/updateNode/${this.currentNodeId}`,
-      { description: this.editDescription }
+      { description: this.editDescription, agent_id: this.editAgentId }
     ).subscribe((updated) => {
       this.node$ = new Observable<Node>(observer => {
         observer.next(updated);

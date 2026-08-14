@@ -16,11 +16,12 @@ class NodeCreate(BaseModel):
     type: str
     title: str
     description: str
-    agent_ids: list[int] = []
+    agent_id: Optional[int] = None
 
 
 class NodeUpdate(BaseModel):
     description: str
+    agent_id: Optional[int] = None
 
 
 class CommentInfo(BaseModel):
@@ -39,6 +40,6 @@ class NodeResponse(BaseModel):
     description: str
     nodes: list["NodeResponse"] = []
     comments: list[CommentInfo] = []
-    agents: list[AgentInfo] = []
+    agent: Optional[AgentInfo] = None
 
     model_config = {"from_attributes": True}

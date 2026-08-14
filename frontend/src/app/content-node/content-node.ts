@@ -21,7 +21,7 @@ export interface Node {
   title: string;
   description: string;
   nodes: Node[];
-  agents?: AgentConfig[];
+  agent?: AgentConfig;
 }
 
 export interface AgentConfig {
@@ -56,7 +56,7 @@ export class ContentNode implements OnInit {
   title = '';
   description = '';
   agents: AgentConfig[] = [];
-  selectedAgentIds: (number | null)[] = [];
+  selectedAgentId: number | null = null;
 
   get hasChildren(): boolean {
     return this.node().nodes.length > 0;
@@ -71,14 +71,14 @@ export class ContentNode implements OnInit {
   }
 
   get isTaskFormValid(): boolean {
-    return this.title.trim().length > 0 && this.selectedAgentIds.length > 0;
+    return this.title.trim().length > 0 && this.selectedAgentId !== null;
   }
 
   openModal(): void {
     this.selectedType = '';
     this.title = '';
     this.description = '';
-    this.selectedAgentIds = [null];
+    this.selectedAgentId = null;
     this.loadAgents();
     this.showModal = true;
   }
@@ -99,30 +99,17 @@ export class ContentNode implements OnInit {
 
   onTypeChange(): void {
     if (this.selectedType !== 'task') {
-      this.selectedAgentIds = [];
+      this.selectedAgentId = null;
     }
   }
 
-  addAgentSelector(): void {
-    this.selectedAgentIds.push(null);
-  }
-
-  removeAgentSelector(index: number): void {
-    this.selectedAgentIds.splice(index, 1);
-  }
-
-  trackByFn(index: number): number {
-    return index;
-  }
-
   onSubmit(): void {
-    const agentIds = this.selectedAgentIds.filter((id): id is number => id !== null);
     this.http.post(`${environment.backendUrl}/node/addNode`, {
       parent_id: this.node().id,
       type: this.selectedType,
       title: this.title,
       description: this.description,
-      agent_ids: this.selectedType === 'task' ? agentIds : [],
+      agent_id: this.selectedType === 'task' ? this.selectedAgentId : null,
     }).subscribe(() => {
       this.nodeAdded.emit();
       this.closeModal();

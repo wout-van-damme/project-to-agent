@@ -17,9 +17,9 @@ class NodeService:
             title=data.title,
             description=data.description,
         )
-        if data.agent_ids:
-            agents = self.db.query(AgentModel).filter(AgentModel.id.in_(data.agent_ids)).all()
-            node.agents = agents
+        if data.agent_id is not None:
+            agent = self.db.query(AgentModel).filter(AgentModel.id == data.agent_id).first()
+            node.agent = agent if agent else None
         self.db.add(node)
         self.db.commit()
         self.db.refresh(node)
@@ -37,18 +37,23 @@ class NodeService:
                 CommentInfo(id=c.id, sender=c.sender, content=c.content, created_at=c.created_at)
                 for c in node.comments
             ],
-            agents=[AgentInfo(id=a.id, name=a.name) for a in node.agents],
+            agent=AgentInfo(id=node.agent.id, name=node.agent.name) if node.agent else None,
         )
 
     def get_node_by_id(self, node_id: int) -> NodeResponse | None:
         node = self.db.query(NodeModel).filter(NodeModel.id == node_id).first()
         return self._to_response(node) if node else None
 
-    def update_node_description(self, node_id: int, data: NodeUpdate) -> NodeResponse | None:
+    def update_node(self, node_id: int, data: NodeUpdate) -> NodeResponse | None:
         node = self.db.query(NodeModel).filter(NodeModel.id == node_id).first()
         if not node:
             return None
         node.description = data.description
+        if data.agent_id is not None:
+            agent = self.db.query(AgentModel).filter(AgentModel.id == data.agent_id).first()
+            node.agent = agent if agent else None
+        else:
+            node.agent = None
         self.db.commit()
         self.db.refresh(node)
         return self._to_response(node)

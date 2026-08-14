@@ -14,5 +14,5 @@ class AgentModel(Base):
     url = Column(String)
     apiKey = Column(String)
 
-    nodes = relationship("NodeModel", secondary="node_agents", back_populates="agents")
+    nodes = relationship("NodeModel", back_populates="agent")
     

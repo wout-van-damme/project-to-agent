@@ -17,7 +17,7 @@
         <button
           type="button"
           class="btn btn-sm btn-outline-secondary edit-button ms-3"
-          (click)="startEdit(node.description)"
+          (click)="startEdit(node)"
         >
           <i class="fa-solid fa-pen-to-square"></i> Edit
         </button>
@@ -26,12 +26,25 @@
 
     <hr>
 
-    @if (node.agents && node.agents.length > 0) {
+    @if (editMode) {
       <div class="assigned-agents mb-3">
-        <span class="fw-bold me-2">Assigned Agents:</span>
-        @for (agent of node.agents; track agent.id) {
-          <span class="badge bg-info text-dark me-1"><i class="fa-solid fa-robot me-1"></i>{{ agent.name }}</span>
-        }
+        <label class="fw-bold me-2" for="editAgent">Assigned Agent:</label>
+        <select
+          id="editAgent"
+          class="form-select"
+          [(ngModel)]="editAgentId"
+          style="max-width: 300px;"
+        >
+          <option [ngValue]="null">No agent</option>
+          @for (agent of (agents$ | async); track agent.id) {
+            <option [ngValue]="agent.id">{{ agent.name }}</option>
+          }
+        </select>
+      </div>
+    } @else if (node.agent) {
+      <div class="assigned-agents mb-3">
+        <span class="fw-bold me-2">Assigned Agent:</span>
+        <span class="badge bg-info text-dark me-1"><i class="fa-solid fa-robot me-1"></i>{{ node.agent.name }}</span>
       </div>
     }
 
