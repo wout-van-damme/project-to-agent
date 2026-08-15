@@ -17,8 +17,10 @@
         <button
           type="button"
           class="btn btn-sm btn-outline-success ms-3"
+          (click)="play()"
+          [disabled]="isPlaying"
         >
-          <i class="fa-solid fa-play"></i> Play
+          <i class="fa-solid fa-play"></i> {{ isPlaying ? 'Running...' : 'Play' }}
         </button>
         <button
           type="button"

@@ -1,11 +1,12 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { marked } from 'marked';
 import { Node, AgentConfig } from '../content-node/content-node';
+import { Comment } from '../comment/comment.model';
 import { environment } from '../../environments/environment';
-import { BehaviorSubject, map, Observable, of } from 'rxjs';
+import { BehaviorSubject, map, Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CommentSection } from '../comment/comment';
@@ -23,12 +24,15 @@ export class NodeDetail implements OnInit {
   private http = inject(HttpClient);
   private sanitizer = inject(DomSanitizer);
 
+  @ViewChild(CommentSection) commentSection!: CommentSection;
+
   node$: Observable<Node> | undefined;
   editMode = false;
   editDescription = '';
   editAgentId: number | null = null;
   agents$: BehaviorSubject<AgentConfig[]> = new BehaviorSubject<AgentConfig[]>([]);
   currentNodeId: number | null = null;
+  isPlaying = false;
 
   constructor(private cdr: ChangeDetectorRef) {}
 
@@ -47,6 +51,24 @@ export class NodeDetail implements OnInit {
   renderMarkdown(text: string): SafeHtml {
     const html = marked.parse(text) as string;
     return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+
+  play(): void {
+    if (this.currentNodeId === null || this.isPlaying) return;
+    this.isPlaying = true;
+    this.http.post<Comment>(
+      `${environment.backendUrl}/play/${this.currentNodeId}`,
+      {}
+    ).subscribe({
+      next: () => {
+        this.isPlaying = false;
+        this.commentSection?.loadComments();
+      },
+      error: (err) => {
+        this.isPlaying = false;
+        console.error(err);
+      }
+    });
   }
 
   startEdit(node: Node): void {
