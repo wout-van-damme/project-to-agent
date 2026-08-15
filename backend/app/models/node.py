@@ -12,6 +12,7 @@ class NodeModel(Base):
     type = Column(String)
     title = Column(String)
     description = Column(String)
+    status = Column(String, default="todo")
     agent_id = Column(Integer, ForeignKey("agents.id"), nullable=True)
 
     children = relationship("NodeModel", back_populates="parent", lazy="selectin")

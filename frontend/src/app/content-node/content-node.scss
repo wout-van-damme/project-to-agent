@@ -51,6 +51,19 @@
     }
 }
 
+.status-icon {
+    font-size: 1.1rem;
+    color: #6c757d;
+}
+
+.status-gray {
+    color: #6c757d;
+}
+
+.status-green {
+    color: #28a745;
+}
+
 .card-body {
     background-color: #{$gray};
     border-radius: #{$border-radius};

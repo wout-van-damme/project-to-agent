@@ -29,6 +29,7 @@ export class NodeDetail implements OnInit {
   node$: Observable<Node> | undefined;
   editMode = false;
   editDescription = '';
+  editStatus = 'todo';
   editAgentId: number | null = null;
   agents$: BehaviorSubject<AgentConfig[]> = new BehaviorSubject<AgentConfig[]>([]);
   currentNodeId: number | null = null;
@@ -73,6 +74,7 @@ export class NodeDetail implements OnInit {
 
   startEdit(node: Node): void {
     this.editDescription = node.description;
+    this.editStatus = node.status || 'todo';
     this.editAgentId = node.agent ? node.agent.id : null;
     this.loadAgents();
     this.editMode = true;
@@ -89,6 +91,7 @@ export class NodeDetail implements OnInit {
   cancelEdit(): void {
     this.editMode = false;
     this.editDescription = '';
+    this.editStatus = 'todo';
     this.editAgentId = null;
   }
 
@@ -96,7 +99,7 @@ export class NodeDetail implements OnInit {
     if (this.currentNodeId === null) return;
     this.http.put<Node>(
       `${environment.backendUrl}/node/updateNode/${this.currentNodeId}`,
-      { description: this.editDescription, agent_id: this.editAgentId }
+      { description: this.editDescription, status: this.editStatus, agent_id: this.editAgentId }
     ).subscribe((updated) => {
       this.node$ = new Observable<Node>(observer => {
         observer.next(updated);
@@ -105,5 +108,22 @@ export class NodeDetail implements OnInit {
       this.editMode = false;
       this.cdr.markForCheck();
     });
+  }
+
+  getStatusIcon(status: string): string {
+    switch (status) {
+      case 'review me':
+        return 'fa-regular fa-square-check status-gray';
+      case 'reviewed':
+        return 'fa-solid fa-square-check status-green';
+      case 'question':
+        return 'fa-solid fa-question';
+      case 'in progress':
+        return 'fa-solid fa-circle-notch';
+      case 'todo':
+        return 'fa-regular fa-circle';
+      default:
+        return '';
+    }
   }
 }

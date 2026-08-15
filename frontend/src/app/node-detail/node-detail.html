@@ -11,7 +11,10 @@
     
     <div class="d-flex align-items-center">
       <h1>{{ node.title }}</h1>
-      <span class="badge bg-secondary">{{ node.type }}</span>  
+      <span class="badge bg-secondary">{{ node.type }}</span>
+      @if (node.status && getStatusIcon(node.status)) {
+        <i class="status-icon" [class]="getStatusIcon(node.status)" [title]="node.status"></i>
+      }
 
       @if (!editMode) {
         <button
@@ -41,6 +44,21 @@
     <hr>
 
     @if (editMode) {
+      <div class="assigned-agents mb-3">
+        <label class="fw-bold me-2" for="editStatus">Status:</label>
+        <select
+          id="editStatus"
+          class="form-select"
+          [(ngModel)]="editStatus"
+          style="max-width: 300px;"
+        >
+          <option value="todo">To do</option>
+          <option value="in progress">In progress</option>
+          <option value="review me">Review me</option>
+          <option value="reviewed">Reviewed</option>
+          <option value="question">Question</option>
+        </select>
+      </div>
       <div class="assigned-agents mb-3">
         <label class="fw-bold me-2" for="editAgent">Assigned Agent:</label>
         <select

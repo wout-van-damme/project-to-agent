@@ -16,6 +16,7 @@ class NodeService:
             type=node_type,
             title=data.title,
             description=data.description,
+            status=data.status or "todo",
         )
         if data.agent_id is not None:
             agent = self.db.query(AgentModel).filter(AgentModel.id == data.agent_id).first()
@@ -32,6 +33,7 @@ class NodeService:
             type=node.type,
             title=node.title,
             description=node.description,
+            status=node.status or "todo",
             nodes=[NodeService._to_response(child) for child in node.children],
             comments=[
                 CommentInfo(id=c.id, sender=c.sender, content=c.content, created_at=c.created_at)
@@ -49,6 +51,8 @@ class NodeService:
         if not node:
             return None
         node.description = data.description
+        if data.status is not None:
+            node.status = data.status
         if data.agent_id is not None:
             agent = self.db.query(AgentModel).filter(AgentModel.id == data.agent_id).first()
             node.agent = agent if agent else None

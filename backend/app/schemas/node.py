@@ -16,11 +16,13 @@ class NodeCreate(BaseModel):
     type: str
     title: str
     description: str
+    status: Optional[str] = None
     agent_id: Optional[int] = None
 
 
 class NodeUpdate(BaseModel):
     description: str
+    status: Optional[str] = None
     agent_id: Optional[int] = None
 
 
@@ -38,6 +40,7 @@ class NodeResponse(BaseModel):
     type: str
     title: str
     description: str
+    status: str
     nodes: list["NodeResponse"] = []
     comments: list[CommentInfo] = []
     agent: Optional[AgentInfo] = None

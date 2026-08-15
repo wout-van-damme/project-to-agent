@@ -20,6 +20,7 @@ export interface Node {
   type: string;
   title: string;
   description: string;
+  status: string;
   nodes: Node[];
   agent?: AgentConfig;
 }
@@ -125,5 +126,22 @@ export class ContentNode implements OnInit {
       ids.delete(this.node().id);
     }
     localStorage.setItem(EXPANDED_NODES_KEY, JSON.stringify([...ids]));
+  }
+
+  getStatusIcon(status: string): string {
+    switch (status) {
+      case 'review me':
+        return 'fa-regular fa-square-check status-gray';
+      case 'reviewed':
+        return 'fa-solid fa-square-check status-green';
+      case 'question':
+        return 'fa-solid fa-question';
+      case 'in progress':
+        return 'fa-solid fa-circle-notch';
+      case 'todo':
+        return 'fa-regular fa-circle';
+      default:
+        return '';
+    }
   }
 }

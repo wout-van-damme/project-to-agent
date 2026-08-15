@@ -13,6 +13,9 @@
         <span class="toggle-spacer"></span>
       }
       <span class="badge bg-secondary">{{ node().type }}</span>
+      @if (node().status && getStatusIcon(node().status)) {
+        <i class="status-icon" [class]="getStatusIcon(node().status)" [title]="node().status"></i>
+      }
       <a class="fw-bold fs-6 node-link" [routerLink]="['/node', node().id]">{{ node().title }}</a>
       @if (!isTask) {
         <button
