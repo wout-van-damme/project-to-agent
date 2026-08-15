@@ -137,7 +137,7 @@ export class ContentNode implements OnInit {
       case 'question':
         return 'fa-solid fa-question';
       case 'in progress':
-        return 'fa-solid fa-circle-notch';
+        return 'fa-solid fa-circle-notch fa-spin';
       case 'todo':
         return 'fa-regular fa-circle';
       default:

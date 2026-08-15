@@ -20,13 +20,19 @@ class PlayService:
         if node.agent is None:
             return None
 
-        model = self._build_model(node.agent)
-        prompt = (
-            f"You are assigned the following task:\n\n{node.description}\n\n"
-            "Complete the task and provide the result."
-        )
-        response = model.invoke([SystemMessage(content=prompt)])
+        node.status = "in progress"
+        self.db.commit()
 
+        try:
+            model = self._build_model(node.agent)
+            prompt = (
+                f"You are assigned the following task:\n\n{node.description}\n\n"
+                "Complete the task and provide the result."
+            )
+            response = model.invoke([SystemMessage(content=prompt)])
+        finally:
+            node.status = "review me"
+            self.db.commit()
 
         # TODO instead of directly adding the comment do this in the route and use the comment service for this?
         comment = CommentModel(node_id=node_id, sender=node.agent.name, content=response.content)

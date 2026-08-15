@@ -63,6 +63,7 @@ export class NodeDetail implements OnInit {
     ).subscribe({
       next: () => {
         this.isPlaying = false;
+        this.node$ = this.http.get<Node>(`${environment.backendUrl}/node/getNode/${this.currentNodeId}`);
         this.commentSection?.loadComments();
       },
       error: (err) => {
@@ -119,7 +120,7 @@ export class NodeDetail implements OnInit {
       case 'question':
         return 'fa-solid fa-question';
       case 'in progress':
-        return 'fa-solid fa-circle-notch';
+        return 'fa-solid fa-circle-notch fa-spin';
       case 'todo':
         return 'fa-regular fa-circle';
       default:
