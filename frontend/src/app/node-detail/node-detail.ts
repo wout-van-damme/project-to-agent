@@ -4,9 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { marked } from 'marked';
 import { Node, AgentConfig } from '../content-node/content-node';
-import { Comment } from '../comment/comment.model';
 import { environment } from '../../environments/environment';
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { BehaviorSubject, interval, map, switchMap, takeWhile } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CommentSection } from '../comment/comment';
@@ -26,7 +25,7 @@ export class NodeDetail implements OnInit {
 
   @ViewChild(CommentSection) commentSection!: CommentSection;
 
-  node$: Observable<Node> | undefined;
+  node$: BehaviorSubject<Node | null> = new BehaviorSubject<Node | null>(null);
   editMode = false;
   editDescription = '';
   editStatus = 'todo';
@@ -41,7 +40,9 @@ export class NodeDetail implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.currentNodeId = Number(id);
-      this.node$ = this.http.get<Node>(`${environment.backendUrl}/node/getNode/${id}`);
+      this.http.get<Node>(`${environment.backendUrl}/node/getNode/${id}`).subscribe(node => {
+        this.node$.next(node);
+      });
     }
   }
 
@@ -57,18 +58,38 @@ export class NodeDetail implements OnInit {
   play(): void {
     if (this.currentNodeId === null || this.isPlaying) return;
     this.isPlaying = true;
-    this.http.post<Comment>(
+    this.http.post<{ status: string }>(
       `${environment.backendUrl}/play/${this.currentNodeId}`,
       {}
     ).subscribe({
       next: () => {
-        this.isPlaying = false;
-        this.node$ = this.http.get<Node>(`${environment.backendUrl}/node/getNode/${this.currentNodeId}`);
-        this.commentSection?.loadComments();
+        this.refreshNode();
+        this.pollNodeUntilDone();
       },
       error: (err) => {
         this.isPlaying = false;
         console.error(err);
+      }
+    });
+  }
+
+  private refreshNode(): void {
+    if (this.currentNodeId === null) return;
+    this.http.get<Node>(`${environment.backendUrl}/node/getNode/${this.currentNodeId}`).subscribe(node => {
+      this.node$.next(node);
+    });
+  }
+
+  private pollNodeUntilDone(): void {
+    if (this.currentNodeId === null) return;
+    interval(3000).pipe(
+      switchMap(() => this.http.get<Node>(`${environment.backendUrl}/node/getNode/${this.currentNodeId}`)),
+      takeWhile(node => node.status === 'in progress', true)
+    ).subscribe(node => {
+      this.node$.next(node);
+      if (node.status !== 'in progress') {
+        this.isPlaying = false;
+        this.commentSection?.loadComments();
       }
     });
   }
@@ -102,10 +123,7 @@ export class NodeDetail implements OnInit {
       `${environment.backendUrl}/node/updateNode/${this.currentNodeId}`,
       { description: this.editDescription, status: this.editStatus, agent_id: this.editAgentId }
     ).subscribe((updated) => {
-      this.node$ = new Observable<Node>(observer => {
-        observer.next(updated);
-        observer.complete();
-      });
+      this.node$.next(updated);
       this.editMode = false;
       this.cdr.markForCheck();
     });

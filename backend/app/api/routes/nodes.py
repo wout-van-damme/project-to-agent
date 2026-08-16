@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db_session
-from app.schemas.comment import CommentResponse
 from app.schemas.node import NodeCreate, NodeResponse, NodeUpdate
 from app.services.node_service import NodeService
 from app.services.play_service import PlayService
@@ -41,11 +40,10 @@ def get_hierarchical_nodes(db: Session = Depends(get_db_session)):
     return service.get_hierarchical_nodes()
 
 
-# TODO temporary code
-@router.post("/play/{node_id}", response_model=CommentResponse)
-def play_node(node_id: int, db: Session = Depends(get_db_session)):
+@router.post("/play/{node_id}")
+def play_node(node_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db_session)):
     play_service = PlayService(db)
-    comment = play_service.play_node(node_id)
-    if comment is None:
+    if not play_service.can_play(node_id):
         raise HTTPException(status_code=404, detail="Node or agent not found")
-    return comment
+    background_tasks.add_task(play_service.play_node, node_id)
+    return {"status": "ok"}
