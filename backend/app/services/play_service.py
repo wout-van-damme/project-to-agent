@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy.orm import Session
 from langchain_core.messages import SystemMessage
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -32,10 +34,7 @@ class PlayService:
 
             try:
                 model = self._build_model(node.agent)
-                prompt = (
-                    f"You are assigned the following task:\n\n{node.description}\n\n"
-                    "Complete the task and provide the result."
-                )
+                prompt = self._build_prompt(node)
                 response = model.invoke([SystemMessage(content=prompt)])
             finally:
                 node.status = "review me"
@@ -47,6 +46,45 @@ class PlayService:
             db.commit()
         finally:
             db.close()
+
+    def _build_prompt(self, node: NodeModel) -> str:
+        context = self._build_context(node)
+        return context
+
+    def _build_context(self, node: NodeModel) -> str:
+        ancestors = self._get_ancestors(node)
+
+        context = '# Context\n\n'
+
+        for ancestor in ancestors:
+            context += f'## {ancestor.title}\n'
+            context += ancestor.description
+            context += '\n\n'
+
+            if len(ancestor.comments) > 0:
+                context += '**Relevant comments:**\n'
+                for comment in ancestor.comments:
+                    # TODO comment.sender
+
+                    for line in comment.content.split('\n'):
+                        context += '> ' + line + '\n'
+
+                    context += '\n'
+
+            context += '\n---\n\n'
+        return context
+
+    def _get_ancestors(self, node: NodeModel) -> list[NodeModel]:
+        ancestors = []
+        current = node
+        while current is not None:
+            ancestors.append(current)
+            if current.parent_id is None:
+                break
+            current = self.db.query(NodeModel).filter(NodeModel.id == current.parent_id).first()
+        ancestors.reverse()
+        return ancestors
+
 
     @staticmethod
     def _build_model(agent: AgentModel) -> BaseChatModel:
