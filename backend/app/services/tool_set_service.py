@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.models.tool_set import ToolSetModel
 from app.models.tool import ToolModel
@@ -10,15 +10,21 @@ class ToolSetService:
     def __init__(self, db: Session):
         self.db = db
 
+    def _get_tools_by_names(self, tool_names: list[str]) -> list[ToolModel]:
+        if not tool_names:
+            return []
+        return self.db.query(ToolModel).filter(ToolModel.name.in_(tool_names)).all()
+
     def create_tool_set(self, data: ToolSetCreate) -> ToolSetModel | None:
-        tool_set = ToolSetModel(name=data.name)
+        tools = self._get_tools_by_names(data.tool_names)
+        tool_set = ToolSetModel(name=data.name, tools=tools)
         self.db.add(tool_set)
         self.db.commit()
         self.db.refresh(tool_set)
         return tool_set
 
     def get_all_tool_sets(self) -> list[ToolSetResponse]:
-        tool_sets = self.db.query(ToolSetModel).all()
+        tool_sets = self.db.query(ToolSetModel).options(joinedload(ToolSetModel.tools)).all()
         return [
             ToolSetResponse(
                 id=ts.id,
@@ -29,13 +35,16 @@ class ToolSetService:
         ]
 
     def get_tool_set_by_id(self, tool_set_id: int) -> ToolSetModel | None:
-        return self.db.query(ToolSetModel).filter(ToolSetModel.id == tool_set_id).first()
+        return self.db.query(ToolSetModel).options(joinedload(ToolSetModel.tools)).filter(ToolSetModel.id == tool_set_id).first()
 
     def update_tool_set(self, tool_set_id: int, data: ToolSetUpdate) -> ToolSetModel | None:
         tool_set = self.get_tool_set_by_id(tool_set_id)
         if not tool_set:
             return None
-        for field, value in data.model_dump(exclude_unset=True).items():
+        update_data = data.model_dump(exclude_unset=True)
+        if "tool_names" in update_data:
+            tool_set.tools = self._get_tools_by_names(update_data.pop("tool_names"))
+        for field, value in update_data.items():
             setattr(tool_set, field, value)
         self.db.commit()
         self.db.refresh(tool_set)
