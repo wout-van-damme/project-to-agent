@@ -2,7 +2,7 @@ import { Component, inject, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { ToolConfig } from '../configure-tools.model';
+import { ToolSetConfig, ToolConfig } from '../configure-tools.model';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -15,13 +15,13 @@ import { environment } from '../../../environments/environment';
 export class ToolDetailComponent {
 
   @Input()
-  tool!: ToolConfig;
+  toolSet!: ToolSetConfig;
 
   @Output()
-  toolUpdated = new EventEmitter<void>();
+  toolSetUpdated = new EventEmitter<void>();
 
   @Output()
-  toolDeleted = new EventEmitter<number>();
+  toolSetDeleted = new EventEmitter<number>();
 
   private http = inject(HttpClient);
 
@@ -29,7 +29,7 @@ export class ToolDetailComponent {
   editName = '';
 
   openEditModal(): void {
-    this.editName = this.tool.name;
+    this.editName = this.toolSet.name;
     this.showEditModal = true;
   }
 
@@ -39,19 +39,19 @@ export class ToolDetailComponent {
 
   saveEdit(): void {
     this.http.put(
-      `${environment.backendUrl}/tools/updateTool/${this.tool.id}`,
+      `${environment.backendUrl}/tool-sets/updateToolSet/${this.toolSet.id}`,
       { name: this.editName }
     ).subscribe(() => {
       this.closeEditModal();
-      this.toolUpdated.emit();
+      this.toolSetUpdated.emit();
     });
   }
 
-  deleteTool(): void {
-    if (confirm(`Delete tool "${this.tool.name}"?`)) {
-      this.http.delete(`${environment.backendUrl}/tools/deleteTool/${this.tool.id}`)
+  deleteToolSet(): void {
+    if (confirm(`Delete tool set "${this.toolSet.name}"?`)) {
+      this.http.delete(`${environment.backendUrl}/tool-sets/deleteToolSet/${this.toolSet.id}`)
         .subscribe(() => {
-          this.toolDeleted.emit(this.tool.id);
+          this.toolSetDeleted.emit(this.toolSet.id);
         });
     }
   }

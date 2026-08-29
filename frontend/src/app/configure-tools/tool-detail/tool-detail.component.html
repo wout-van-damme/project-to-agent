@@ -1,14 +1,22 @@
 <div class="card mb-3">
   <div class="card-body">
-    <div class="d-flex justify-content-between align-items-center">
-      <h5 class="card-title mb-0">{{ tool.name }}</h5>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h5 class="card-title mb-0">{{ toolSet.name }}</h5>
       <div>
         <button class="btn btn-sm btn-outline-primary me-2" (click)="openEditModal()">
           <i class="fa-solid fa-pen"></i> Edit
         </button>
-        <button class="btn btn-sm btn-outline-danger" (click)="deleteTool()">
+        <button class="btn btn-sm btn-outline-danger" (click)="deleteToolSet()">
           <i class="fa-solid fa-trash"></i> Delete
         </button>
+      </div>
+    </div>
+    <div>
+      <small class="text-muted mb-1">Tools:</small>
+      <div class="d-flex flex-wrap gap-1">
+        @for (tool of toolSet.tools; track tool.id) {
+          <span class="badge bg-secondary">{{ tool.name }} ({{ tool.category }})</span>
+        }
       </div>
     </div>
   </div>
@@ -19,14 +27,14 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Edit Tool</h5>
+          <h5 class="modal-title">Edit Tool Set</h5>
           <button type="button" class="btn-close" (click)="closeEditModal()"></button>
         </div>
         <form (ngSubmit)="saveEdit()">
           <div class="modal-body">
             <div class="mb-3">
-              <label for="editToolName" class="form-label">Name</label>
-              <input id="editToolName" type="text" class="form-control" [(ngModel)]="editName" name="editName" />
+              <label for="editToolSetName" class="form-label">Name</label>
+              <input id="editToolSetName" type="text" class="form-control" [(ngModel)]="editName" name="editName" />
             </div>
           </div>
           <div class="modal-footer">

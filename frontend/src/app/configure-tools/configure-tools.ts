@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ToolModal } from './tool-modal/tool-modal';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { ToolConfig } from './configure-tools.model';
+import { ToolSetConfig } from './configure-tools.model';
 import { BehaviorSubject } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { ToolDetailComponent } from './tool-detail/tool-detail.component';
@@ -17,12 +17,12 @@ import { ToolDetailComponent } from './tool-detail/tool-detail.component';
 export class ConfigureTools {
   private http = inject(HttpClient);
 
-  toolConfigs$: BehaviorSubject<ToolConfig[]> = new BehaviorSubject<ToolConfig[]>([]);
+  toolSetConfigs$: BehaviorSubject<ToolSetConfig[]> = new BehaviorSubject<ToolSetConfig[]>([]);
 
   showModal = false;
 
   ngOnInit(): void {
-    this.loadToolConfigs();
+    this.loadToolSetConfigs();
   }
 
   openModal(): void {
@@ -30,24 +30,24 @@ export class ConfigureTools {
   }
 
   closeModal(): void {
-    this.loadToolConfigs();
+    this.loadToolSetConfigs();
     this.showModal = false;
   }
 
-  onToolUpdated(): void {
-    this.loadToolConfigs();
+  updateToolSets(): void {
+    this.loadToolSetConfigs();
   }
 
-  onToolDeleted(toolId: number): void {
-    const current = this.toolConfigs$.value;
-    this.toolConfigs$.next(current.filter(t => t.id !== toolId));
+  deleteToolSet(toolSetId: number): void {
+    const current = this.toolSetConfigs$.value;
+    this.toolSetConfigs$.next(current.filter(t => t.id !== toolSetId));
   }
 
-  loadToolConfigs(): void {
-    this.http.get<[ToolConfig]>(`${environment.backendUrl}/tools/getAllTools`)
+  loadToolSetConfigs(): void {
+    this.http.get<ToolSetConfig[]>(`${environment.backendUrl}/tool-sets/getAllToolSets`)
       .subscribe((data) => {
         const sorted = [...data].sort((a, b) => a.id - b.id);
-        this.toolConfigs$.next(sorted);
+        this.toolSetConfigs$.next(sorted);
       });
   }
 }

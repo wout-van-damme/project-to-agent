@@ -1,6 +1,6 @@
 <div class="p-4">
   <div class="d-flex align-items-center mb-3">
-    <h1 class="mb-0">Configure Tools</h1>
+    <h1 class="mb-0">Configure Tool Sets</h1>
     <div class="ms-3">
       <button
         type="button"
@@ -10,11 +10,11 @@
     </div>
   </div>
 
-  @for (toolConfig of (toolConfigs$ | async); track toolConfig.id) {
+  @for (toolSetConfig of (toolSetConfigs$ | async); track toolSetConfig.id) {
     <app-tool-detail
-      [tool]="toolConfig"
-      (toolUpdated)="onToolUpdated()"
-      (toolDeleted)="onToolDeleted($event)">
+      [toolSet]="toolSetConfig"
+      (toolSetUpdated)="updateToolSets()"
+      (toolSetDeleted)="deleteToolSet($event)">
     </app-tool-detail>
   }
 </div>
