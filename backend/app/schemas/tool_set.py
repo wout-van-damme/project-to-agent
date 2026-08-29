@@ -5,12 +5,12 @@ from app.schemas.tool import ToolResponse
 
 class ToolSetCreate(BaseModel):
     name: str
-    tool_names: list[str] = []
+    tool_ids: list[int] = []
 
 
 class ToolSetUpdate(BaseModel):
     name: str | None = None
-    tool_names: list[str] = None
+    tool_ids: list[int] | None = None
 
 
 class ToolSetResponse(BaseModel):

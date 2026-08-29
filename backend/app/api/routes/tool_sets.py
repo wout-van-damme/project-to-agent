@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.schemas.tool_set import ToolSetCreate, ToolSetResponse, ToolSetUpdate
-from app.schemas.tool import ToolCreate, ToolResponse
+from app.schemas.tool import ToolResponse
 from app.database import get_db_session
 from app.services.tool_set_service import ToolSetService
 
@@ -13,7 +13,11 @@ router = APIRouter()
 def add_tool_set(data: ToolSetCreate, db: Session = Depends(get_db_session)):
     service = ToolSetService(db)
     tool_set = service.create_tool_set(data)
-    return ToolSetResponse(id=tool_set.id, name=tool_set.name, tools=[])
+    return ToolSetResponse(
+        id=tool_set.id,
+        name=tool_set.name,
+        tools=[ToolResponse(id=t.id, name=t.name, category=t.category) for t in tool_set.tools]
+    )
 
 
 @router.get("/tool-sets/getAllToolSets", response_model=list[ToolSetResponse])

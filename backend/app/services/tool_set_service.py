@@ -10,13 +10,13 @@ class ToolSetService:
     def __init__(self, db: Session):
         self.db = db
 
-    def _get_tools_by_names(self, tool_names: list[str]) -> list[ToolModel]:
-        if not tool_names:
+    def _get_tools_by_ids(self, tool_ids: list[int]) -> list[ToolModel]:
+        if not tool_ids:
             return []
-        return self.db.query(ToolModel).filter(ToolModel.name.in_(tool_names)).all()
+        return self.db.query(ToolModel).filter(ToolModel.id.in_(tool_ids)).all()
 
     def create_tool_set(self, data: ToolSetCreate) -> ToolSetModel | None:
-        tools = self._get_tools_by_names(data.tool_names)
+        tools = self._get_tools_by_ids(data.tool_ids)
         tool_set = ToolSetModel(name=data.name, tools=tools)
         self.db.add(tool_set)
         self.db.commit()
@@ -42,8 +42,8 @@ class ToolSetService:
         if not tool_set:
             return None
         update_data = data.model_dump(exclude_unset=True)
-        if "tool_names" in update_data:
-            tool_set.tools = self._get_tools_by_names(update_data.pop("tool_names"))
+        if "tool_ids" in update_data:
+            tool_set.tools = self._get_tools_by_ids(update_data.pop("tool_ids"))
         for field, value in update_data.items():
             setattr(tool_set, field, value)
         self.db.commit()
