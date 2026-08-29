@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit, output, signal } from '@angular/core';
+import { Component, inject, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -44,8 +44,8 @@ export interface AgentConfig {
 export class ContentNode implements OnInit {
   private http = inject(HttpClient);
 
-  readonly node = input.required<Node>();
-  readonly nodeAdded = output<void>();
+  @Input({ required: true }) node!: Node;
+  @Output() nodeAdded = new EventEmitter<void>();
 
   expanded = false;
 

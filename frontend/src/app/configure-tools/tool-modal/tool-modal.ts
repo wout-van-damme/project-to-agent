@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, input, output, OnInit } from '@angular/core';
+import { Component, inject, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../environments/environment';
 import { ToolConfig, ToolSetConfig } from '../configure-tools.model';
@@ -16,8 +16,10 @@ import { BehaviorSubject } from 'rxjs';
 export class ToolModal implements OnInit {
   private http = inject(HttpClient);
 
-  show = input(false);
-  closed = output<void>();
+  @Input()
+  show = false;
+  @Output()
+  closed = new EventEmitter<void>();
 
   availableTools$: BehaviorSubject<ToolConfig[]> = new BehaviorSubject<ToolConfig[]>([]);
   selectedToolIds: number[] = [];

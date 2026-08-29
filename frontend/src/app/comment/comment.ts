@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -19,7 +19,7 @@ export class CommentSection implements OnInit {
   private http = inject(HttpClient);
   private sanitizer = inject(DomSanitizer);
 
-  nodeId = input.required<number>();
+  @Input({ required: true }) nodeId!: number;
 
   comments$: BehaviorSubject<Comment[]> = new BehaviorSubject<Comment[]>([]);
   newComment = '';
@@ -32,7 +32,7 @@ export class CommentSection implements OnInit {
 
   loadComments(): void {
     this.http.get<Comment[]>(
-      `${environment.backendUrl}/node/${this.nodeId()}/getComments`
+      `${environment.backendUrl}/node/${this.nodeId}/getComments`
     ).subscribe(comments => {
       this.comments$.next(comments);
     });
@@ -43,7 +43,7 @@ export class CommentSection implements OnInit {
       return;
     }
     this.http.post<Comment>(
-      `${environment.backendUrl}/node/${this.nodeId()}/addComment`,
+      `${environment.backendUrl}/node/${this.nodeId}/addComment`,
       { content: this.newComment }
     ).subscribe(() => {
       this.newComment = '';
