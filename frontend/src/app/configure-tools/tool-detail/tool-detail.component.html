@@ -22,28 +22,10 @@
   </div>
 </div>
 
-@if (showEditModal) {
-  <div class="modal d-block" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Edit Tool Set</h5>
-          <button type="button" class="btn-close" (click)="closeEditModal()"></button>
-        </div>
-        <form (ngSubmit)="saveEdit()">
-          <div class="modal-body">
-            <div class="mb-3">
-              <label for="editToolSetName" class="form-label">Name</label>
-              <input id="editToolSetName" type="text" class="form-control" [(ngModel)]="editName" name="editName" />
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
-            <button type="submit" class="btn btn-success text-white px-3">Save</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-  <div class="modal-backdrop fade show" (click)="closeEditModal()"></div>
-}
+<app-tool-detail-edit-modal
+  [show]="showEditModal"
+  [toolSetName]="toolSet.name"
+  [toolSetId]="toolSet.id"
+  (closed)="onEditModalClosed()"
+  (saved)="onEditModalSaved()"
+></app-tool-detail-edit-modal>

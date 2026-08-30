@@ -1,8 +1,7 @@
 import { Component, EventEmitter, inject, Input, OnInit, Output, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { environment } from '../../environments/environment';
+import { AddNodeModal } from './add-node-modal/add-node-modal';
 
 const EXPANDED_NODES_KEY = 'expandedNodes';
 
@@ -37,7 +36,7 @@ export interface AgentConfig {
 @Component({
   selector: 'app-content-node',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [RouterLink, AddNodeModal],
   templateUrl: './content-node.html',
   styleUrl: './content-node.scss'
 })
@@ -48,17 +47,11 @@ export class ContentNode implements OnInit {
   @Output() nodeAdded = new EventEmitter<void>();
 
   expanded = false;
+  showModal = signal(false);
 
   ngOnInit(): void {
     this.expanded = this.hasChildren && getExpandedNodeIds().has(this.node.id);
   }
-  showModal = false;
-  selectedType = '';
-  title = '';
-  description = '';
-  agents: AgentConfig[] = [];
-  selectedAgentId: number | null = null;
-  loadingAgents = signal(false);
 
   get hasChildren(): boolean {
     return this.node.nodes.length > 0;
@@ -68,58 +61,16 @@ export class ContentNode implements OnInit {
     return this.node.type === 'task';
   }
 
-  get isTaskTypeSelected(): boolean {
-    return this.selectedType === 'task';
-  }
-
-  get isTaskFormValid(): boolean {
-    return this.title.trim().length > 0 && this.selectedAgentId !== null;
-  }
-
   openModal(): void {
-    this.selectedType = '';
-    this.title = '';
-    this.description = '';
-    this.selectedAgentId = null;
-    this.loadAgents();
-    this.showModal = true;
+    this.showModal.set(true);
   }
 
-  closeModal(): void {
-    this.showModal = false;
+  onModalClosed(): void {
+    this.showModal.set(false);
   }
 
-  loadAgents(): void {
-    this.loadingAgents.set(true);
-    this.http.get<AgentConfig[]>(`${environment.backendUrl}/agents/getAllAgents`)
-      .subscribe({
-        next: (data) => {
-          this.agents = [...data].sort((a, b) => a.name.localeCompare(b.name));
-          this.loadingAgents.set(false);
-        },
-        error: () => {
-          this.loadingAgents.set(false);
-        }
-      });
-  }
-
-  onTypeChange(): void {
-    if (this.selectedType !== 'task') {
-      this.selectedAgentId = null;
-    }
-  }
-
-  onSubmit(): void {
-    this.http.post(`${environment.backendUrl}/node/addNode`, {
-      parent_id: this.node.id,
-      type: this.selectedType,
-      title: this.title,
-      description: this.description,
-      agent_id: this.selectedType === 'task' ? this.selectedAgentId : null,
-    }).subscribe(() => {
-      this.nodeAdded.emit();
-      this.closeModal();
-    });
+  onModalSaved(): void {
+    this.nodeAdded.emit();
   }
 
   setExpand(expanded: boolean): void {

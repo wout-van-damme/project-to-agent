@@ -1,0 +1,57 @@
+@if (show()) {
+  <div class="modal d-block" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add new node</h5>
+          <button type="button" class="btn-close" (click)="close()"></button>
+        </div>
+        <form (ngSubmit)="onSubmit()">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label [for]="'typeSelect-' + parentId" class="form-label">Type</label>
+              <select [id]="'typeSelect-' + parentId" class="form-select" [(ngModel)]="selectedType" name="type" required (change)="onTypeChange()">
+                <option value="" disabled>Select type</option>
+                <option value="task">Task</option>
+                <option value="project">Project</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label [for]="'titleInput-' + parentId" class="form-label">Title</label>
+              <input [id]="'titleInput-' + parentId" type="text" class="form-control" [(ngModel)]="title" name="title" required />
+            </div>
+            @if (isTaskTypeSelected) {
+              <div class="mb-3">
+                <label class="form-label">Agent</label>
+                <select
+                  class="form-select"
+                  [(ngModel)]="selectedAgentId"
+                  name="agent"
+                  required
+                >
+                  <option [ngValue]="null" disabled>Select agent</option>
+                  @if (loadingAgents()) {
+                    <option disabled>Loading agents...</option>
+                  } @else {
+                    @for (agent of agents; track agent.id) {
+                      <option [ngValue]="agent.id">{{ agent.name }}</option>
+                    }
+                  }
+                </select>
+              </div>
+            }
+            <div class="mb-3">
+              <label [for]="'descriptionTextarea-' + parentId" class="form-label">Description</label>
+              <textarea [id]="'descriptionTextarea-' + parentId" class="form-control" rows="3" [(ngModel)]="description" name="description"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
+            <button type="submit" class="btn btn-success text-white px-3" [disabled]="isTaskTypeSelected && !isTaskFormValid">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show" (click)="close()"></div>
+}

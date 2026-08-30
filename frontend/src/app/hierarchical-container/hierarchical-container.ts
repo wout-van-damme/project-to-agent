@@ -1,13 +1,13 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ContentNode, Node } from '../content-node/content-node';
-import { FormsModule } from '@angular/forms';
 import { environment } from '../../environments/environment';
+import { AddWorkspaceModal } from './add-workspace-modal/add-workspace-modal';
 
 @Component({
   selector: 'app-hierarchical-container',
   standalone: true,
-  imports: [ContentNode, FormsModule],
+  imports: [ContentNode, AddWorkspaceModal],
   templateUrl: './hierarchical-container.html',
   styleUrl: './hierarchical-container.scss'
 })
@@ -15,12 +15,8 @@ export class HierarchicalContainer implements OnInit {
   private http = inject(HttpClient);
 
   nodes = signal<Node[]>([]);
-  showModal = false;
+  showModal = signal(false);
   loading = signal(false);
-
-  selectedType = 'workspace';
-  title = '';
-  description = '';
 
   ngOnInit(): void {
     this.loadNodes();
@@ -41,25 +37,14 @@ export class HierarchicalContainer implements OnInit {
   }
 
   openModal(): void {
-    this.selectedType = 'workspace';
-    this.title = '';
-    this.description = '';
-    this.showModal = true;
+    this.showModal.set(true);
   }
 
-  closeModal(): void {
-    this.showModal = false;
+  onModalClosed(): void {
+    this.showModal.set(false);
   }
 
-  onSubmit(): void {
-    this.http.post(`${environment.backendUrl}/node/addNode`, {
-      parent_id: null,
-      type: this.selectedType,
-      title: this.title,
-      description: this.description,
-    }).subscribe(() => {
-      this.loadNodes();
-      this.closeModal();
-    });
+  onModalSaved(): void {
+    this.loadNodes();
   }
 }

@@ -1,14 +1,14 @@
-import { Component, inject, Input, Output, EventEmitter } from '@angular/core';
+import { Component, inject, Input, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
-import { ToolSetConfig, ToolConfig } from '../configure-tools.model';
+import { ToolSetConfig } from '../configure-tools.model';
 import { environment } from '../../../environments/environment';
+import { ToolDetailEditModal } from '../tool-detail-edit-modal/tool-detail-edit-modal';
 
 @Component({
   selector: 'app-tool-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ToolDetailEditModal],
   templateUrl: './tool-detail.component.html',
   styleUrl: './tool-detail.component.scss'
 })
@@ -25,26 +25,18 @@ export class ToolDetailComponent {
 
   private http = inject(HttpClient);
 
-  showEditModal = false;
-  editName = '';
+  showEditModal = signal(false);
 
   openEditModal(): void {
-    this.editName = this.toolSet.name;
-    this.showEditModal = true;
+    this.showEditModal.set(true);
   }
 
-  closeEditModal(): void {
-    this.showEditModal = false;
+  onEditModalClosed(): void {
+    this.showEditModal.set(false);
   }
 
-  saveEdit(): void {
-    this.http.put(
-      `${environment.backendUrl}/tool-sets/updateToolSet/${this.toolSet.id}`,
-      { name: this.editName }
-    ).subscribe(() => {
-      this.closeEditModal();
-      this.toolSetUpdated.emit();
-    });
+  onEditModalSaved(): void {
+    this.toolSetUpdated.emit();
   }
 
   deleteToolSet(): void {
