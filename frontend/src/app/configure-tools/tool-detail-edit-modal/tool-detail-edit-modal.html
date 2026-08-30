@@ -1,6 +1,6 @@
 @if (show()) {
   <div class="modal d-block" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Edit Tool Set</h5>
@@ -12,10 +12,39 @@
               <label for="editToolSetName" class="form-label">Name</label>
               <input id="editToolSetName" type="text" class="form-control" [(ngModel)]="editName" name="editName" />
             </div>
+            <div class="mb-3">
+              <label class="form-label">Select Tools</label>
+              <div class="row">
+                @if (loading()) {
+                  <div class="col-12 text-center py-3">
+                    <p class="text-muted">Loading tools...</p>
+                  </div>
+                } @else {
+                  @for (tool of (availableTools$ | async); track tool.id) {
+                    <div class="col-md-4 mb-2">
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          [id]="'tool-' + tool.id"
+                          [checked]="isSelected(tool.id)"
+                          (change)="toggleTool(tool.id)"
+                        />
+                        <label class="form-check-label" [for]="'tool-' + tool.id">
+                          {{ tool.name }} ({{ tool.category }})
+                        </label>
+                      </div>
+                    </div>
+                  } @empty {
+                    <div class="col-12 text-center text-muted py-3">No tools available.</div>
+                  }
+                }
+              </div>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
-            <button type="submit" class="btn btn-success text-white px-3">Save</button>
+            <button type="submit" class="btn btn-success text-white px-3" [disabled]="!editName.trim() || selectedToolIds.length === 0">Save</button>
           </div>
         </form>
       </div>

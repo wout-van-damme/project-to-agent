@@ -47,4 +47,8 @@ export class ToolDetailComponent {
         });
     }
   }
+
+  get currentToolIds(): number[] {
+    return this.toolSet.tools.map(tool => tool.id);
+  }
 }
