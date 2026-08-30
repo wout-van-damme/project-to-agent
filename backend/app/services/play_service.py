@@ -5,11 +5,13 @@ from langchain_core.messages import SystemMessage
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
+from langchain.agents import create_agent
 
 from app.database import SessionLocal
 from app.models.agent import AgentModel
 from app.models.comment import CommentModel
 from app.models.node import NodeModel
+from app.tool_defs import TOOLS
 
 
 class PlayService:
@@ -35,7 +37,14 @@ class PlayService:
             try:
                 model = self._build_model(node.agent)
                 prompt = self._build_prompt(node)
-                response = model.invoke([SystemMessage(content=prompt)])
+
+                agent = create_agent(
+                    model=model,
+                    tools=TOOLS,
+                )
+
+                response = agent.invoke({"messages": [{"role": "user", "content": prompt}]})
+                response = response['messages'][-1]
             finally:
                 node.status = "review me"
                 db.commit()

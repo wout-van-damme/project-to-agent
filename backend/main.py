@@ -20,7 +20,6 @@ def seed_tools_data():
             tools = [
                 ToolModel(name="read_file", category="file"),
                 ToolModel(name="write_file", category="file"),
-                ToolModel(name="list_files", category="file"),
             ]
             db.add_all(tools)
             db.commit()
