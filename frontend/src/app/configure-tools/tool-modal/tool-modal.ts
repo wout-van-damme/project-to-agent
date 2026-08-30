@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, inject, Input, Output, EventEmitter, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../environments/environment';
 import { ToolConfig, ToolSetConfig } from '../configure-tools.model';
@@ -17,22 +17,30 @@ export class ToolModal implements OnInit {
   private http = inject(HttpClient);
 
   @Input()
-  show = false;
+  show = signal(false);
   @Output()
   closed = new EventEmitter<void>();
 
   availableTools$: BehaviorSubject<ToolConfig[]> = new BehaviorSubject<ToolConfig[]>([]);
   selectedToolIds: number[] = [];
   toolSetName = '';
+  loading = signal(false);
 
   ngOnInit(): void {
     this.loadAvailableTools();
   }
 
   loadAvailableTools(): void {
+    this.loading.set(true);
     this.http.get<ToolConfig[]>(`${environment.backendUrl}/tools/getAllTools`)
-      .subscribe((tools) => {
-        this.availableTools$.next(tools);
+      .subscribe({
+        next: (tools) => {
+          this.availableTools$.next(tools);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.loading.set(false);
+        }
       });
   }
 

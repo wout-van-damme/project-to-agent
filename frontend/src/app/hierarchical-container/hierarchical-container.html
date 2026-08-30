@@ -10,8 +10,16 @@
     </div>
   </div>
 
-  @for (node of nodes(); track node.id) {
-    <app-content-node [node]="node" (nodeAdded)="loadNodes()" />
+  @if (loading()) {
+    <div class="text-center py-3">
+      <p class="text-muted">Loading workspaces...</p>
+    </div>
+  } @else {
+    @for (node of nodes(); track node.id) {
+      <app-content-node [node]="node" (nodeAdded)="loadNodes()" />
+    } @empty {
+      <p class="text-center text-muted py-3">No workspaces yet.</p>
+    }
   }
 </div>
 

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, Input, Output, EventEmitter } from '@angular/core';
+import { Component, inject, Input, Output, EventEmitter, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../environments/environment';
 
@@ -13,7 +13,7 @@ import { environment } from '../../../environments/environment';
 export class AgentModal {
   private http = inject(HttpClient);
 
-  @Input() show = false;
+  @Input() show = signal(false);
   @Output() closed = new EventEmitter<void>();
 
   name = '';

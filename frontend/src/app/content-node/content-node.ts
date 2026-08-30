@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -50,7 +50,7 @@ export class ContentNode implements OnInit {
   expanded = false;
 
   ngOnInit(): void {
-    this.expanded = this.hasChildren && getExpandedNodeIds().has(this.node().id);
+    this.expanded = this.hasChildren && getExpandedNodeIds().has(this.node.id);
   }
   showModal = false;
   selectedType = '';
@@ -58,13 +58,14 @@ export class ContentNode implements OnInit {
   description = '';
   agents: AgentConfig[] = [];
   selectedAgentId: number | null = null;
+  loadingAgents = signal(false);
 
   get hasChildren(): boolean {
-    return this.node().nodes.length > 0;
+    return this.node.nodes.length > 0;
   }
 
   get isTask(): boolean {
-    return this.node().type === 'task';
+    return this.node.type === 'task';
   }
 
   get isTaskTypeSelected(): boolean {
@@ -92,9 +93,16 @@ export class ContentNode implements OnInit {
     if (this.agents.length > 0) {
       return;
     }
+    this.loadingAgents.set(true);
     this.http.get<AgentConfig[]>(`${environment.backendUrl}/agents/getAllAgents`)
-      .subscribe((data) => {
-        this.agents = [...data].sort((a, b) => a.name.localeCompare(b.name));
+      .subscribe({
+        next: (data) => {
+          this.agents = [...data].sort((a, b) => a.name.localeCompare(b.name));
+          this.loadingAgents.set(false);
+        },
+        error: () => {
+          this.loadingAgents.set(false);
+        }
       });
   }
 
@@ -106,7 +114,7 @@ export class ContentNode implements OnInit {
 
   onSubmit(): void {
     this.http.post(`${environment.backendUrl}/node/addNode`, {
-      parent_id: this.node().id,
+      parent_id: this.node.id,
       type: this.selectedType,
       title: this.title,
       description: this.description,
@@ -121,9 +129,9 @@ export class ContentNode implements OnInit {
     this.expanded = expanded;
     const ids = getExpandedNodeIds();
     if (expanded) {
-      ids.add(this.node().id);
+      ids.add(this.node.id);
     } else {
-      ids.delete(this.node().id);
+      ids.delete(this.node.id);
     }
     localStorage.setItem(EXPANDED_NODES_KEY, JSON.stringify([...ids]));
   }

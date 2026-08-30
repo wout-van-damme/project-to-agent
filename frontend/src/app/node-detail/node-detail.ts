@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -33,6 +33,8 @@ export class NodeDetail implements OnInit {
   agents$: BehaviorSubject<AgentConfig[]> = new BehaviorSubject<AgentConfig[]>([]);
   currentNodeId: number | null = null;
   isPlaying = false;
+  loading = signal(false);
+  loadingAgents = signal(false);
 
   constructor(private cdr: ChangeDetectorRef) {}
 
@@ -40,8 +42,15 @@ export class NodeDetail implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.currentNodeId = Number(id);
-      this.http.get<Node>(`${environment.backendUrl}/node/getNode/${id}`).subscribe(node => {
-        this.node$.next(node);
+      this.loading.set(true);
+      this.http.get<Node>(`${environment.backendUrl}/node/getNode/${id}`).subscribe({
+        next: (node) => {
+          this.node$.next(node);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.loading.set(false);
+        }
       });
     }
   }
@@ -103,10 +112,17 @@ export class NodeDetail implements OnInit {
   }
 
   loadAgents(): void {
+    this.loadingAgents.set(true);
     this.http.get<AgentConfig[]>(`${environment.backendUrl}/agents/getAllAgents`).pipe(
       map(data => [...data].sort((a, b) => a.name.localeCompare(b.name)))
-    ).subscribe((agents) => {
-      this.agents$.next(agents);
+    ).subscribe({
+      next: (agents) => {
+        this.agents$.next(agents);
+        this.loadingAgents.set(false);
+      },
+      error: () => {
+        this.loadingAgents.set(false);
+      }
     })
   }
 

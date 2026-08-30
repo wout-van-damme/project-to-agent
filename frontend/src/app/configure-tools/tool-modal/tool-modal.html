@@ -15,21 +15,29 @@
             <div class="mb-3">
               <label class="form-label">Select Tools</label>
               <div class="row">
-                @for (tool of (availableTools$ | async); track tool.id) {
-                  <div class="col-md-4 mb-2">
-                    <div class="form-check">
-                      <input
-                        class="form-check-input"
-                        type="checkbox"
-                        [id]="'tool-' + tool.id"
-                        [checked]="isSelected(tool.id)"
-                        (change)="toggleTool(tool.id)"
-                      />
-                      <label class="form-check-label" [for]="'tool-' + tool.id">
-                        {{ tool.name }} ({{ tool.category }})
-                      </label>
-                    </div>
+                @if (loading()) {
+                  <div class="col-12 text-center py-3">
+                    <p class="text-muted">Loading tools...</p>
                   </div>
+                } @else {
+                  @for (tool of (availableTools$ | async); track tool.id) {
+                    <div class="col-md-4 mb-2">
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          [id]="'tool-' + tool.id"
+                          [checked]="isSelected(tool.id)"
+                          (change)="toggleTool(tool.id)"
+                        />
+                        <label class="form-check-label" [for]="'tool-' + tool.id">
+                          {{ tool.name }} ({{ tool.category }})
+                        </label>
+                      </div>
+                    </div>
+                  } @empty {
+                    <div class="col-12 text-center text-muted py-3">No tools available.</div>
+                  }
                 }
               </div>
             </div>

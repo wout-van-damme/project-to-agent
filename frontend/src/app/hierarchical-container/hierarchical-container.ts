@@ -16,6 +16,7 @@ export class HierarchicalContainer implements OnInit {
 
   nodes = signal<Node[]>([]);
   showModal = false;
+  loading = signal(false);
 
   selectedType = 'workspace';
   title = '';
@@ -26,8 +27,17 @@ export class HierarchicalContainer implements OnInit {
   }
 
   loadNodes(): void {
+    this.loading.set(true);
     this.http.get<Node[]>(`${environment.backendUrl}/nodes/getHierarchicalNodes`)
-      .subscribe((data) => this.nodes.set(data));
+      .subscribe({
+        next: (data) => {
+          this.nodes.set(data);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.loading.set(false);
+        }
+      });
   }
 
   openModal(): void {

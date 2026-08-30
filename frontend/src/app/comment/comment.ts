@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -25,16 +25,24 @@ export class CommentSection implements OnInit {
   newComment = '';
   editingCommentId: number | null = null;
   editingContent = '';
+  loading = signal(false);
 
   ngOnInit(): void {
     this.loadComments();
   }
 
   loadComments(): void {
+    this.loading.set(true);
     this.http.get<Comment[]>(
       `${environment.backendUrl}/node/${this.nodeId}/getComments`
-    ).subscribe(comments => {
-      this.comments$.next(comments);
+    ).subscribe({
+      next: (comments) => {
+        this.comments$.next(comments);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.loading.set(false);
+      }
     });
   }
 

@@ -12,11 +12,11 @@
       } @else {
         <span class="toggle-spacer"></span>
       }
-      <span class="badge bg-secondary">{{ node().type }}</span>
-      @if (node().status && getStatusIcon(node().status)) {
-        <i class="status-icon" [class]="getStatusIcon(node().status)" [title]="node().status"></i>
+      <span class="badge bg-secondary">{{ node.type }}</span>
+      @if (node.status && getStatusIcon(node.status)) {
+        <i class="status-icon" [class]="getStatusIcon(node.status)" [title]="node.status"></i>
       }
-      <a class="fw-bold fs-6 node-link" [routerLink]="['/node', node().id]">{{ node().title }}</a>
+      <a class="fw-bold fs-6 node-link" [routerLink]="['/node', node.id]">{{ node.title }}</a>
       @if (!isTask) {
         <button
           type="button"
@@ -29,7 +29,7 @@
 </div>
 @if (hasChildren && expanded) {
   <div class="ms-4">
-    @for (child of node().nodes; track child.id) {
+    @for (child of node.nodes; track child.id) {
       <app-content-node [node]="child" (nodeAdded)="nodeAdded.emit()" />
     }
   </div>
@@ -46,16 +46,16 @@
         <form (ngSubmit)="onSubmit()">
           <div class="modal-body">
             <div class="mb-3">
-              <label for="typeSelect-{{ node().id }}" class="form-label">Type</label>
-              <select id="typeSelect-{{ node().id }}" class="form-select" [(ngModel)]="selectedType" name="type" required (change)="onTypeChange()">
+              <label for="typeSelect-{{ node.id }}" class="form-label">Type</label>
+              <select id="typeSelect-{{ node.id }}" class="form-select" [(ngModel)]="selectedType" name="type" required (change)="onTypeChange()">
                 <option value="" disabled>Select type</option>
                 <option value="task">Task</option>
                 <option value="project">Project</option>
               </select>
             </div>
             <div class="mb-3">
-              <label for="titleInput-{{ node().id }}" class="form-label">Title</label>
-              <input id="titleInput-{{ node().id }}" type="text" class="form-control" [(ngModel)]="title" name="title" required />
+              <label for="titleInput-{{ node.id }}" class="form-label">Title</label>
+              <input id="titleInput-{{ node.id }}" type="text" class="form-control" [(ngModel)]="title" name="title" required />
             </div>
             @if (isTaskTypeSelected) {
               <div class="mb-3">
@@ -67,15 +67,19 @@
                   required
                 >
                   <option [ngValue]="null" disabled>Select agent</option>
-                  @for (agent of agents; track agent.id) {
-                    <option [ngValue]="agent.id">{{ agent.name }}</option>
+                  @if (loadingAgents()) {
+                    <option disabled>Loading agents...</option>
+                  } @else {
+                    @for (agent of agents; track agent.id) {
+                      <option [ngValue]="agent.id">{{ agent.name }}</option>
+                    }
                   }
                 </select>
               </div>
             }
             <div class="mb-3">
-              <label for="descriptionTextarea-{{ node().id }}" class="form-label">Description</label>
-              <textarea id="descriptionTextarea-{{ node().id }}" class="form-control" rows="3" [(ngModel)]="description" name="description"></textarea>
+              <label for="descriptionTextarea-{{ node.id }}" class="form-label">Description</label>
+              <textarea id="descriptionTextarea-{{ node.id }}" class="form-control" rows="3" [(ngModel)]="description" name="description"></textarea>
             </div>
           </div>
           <div class="modal-footer">

@@ -10,12 +10,20 @@
     </div>
   </div>
 
-  @for (toolSetConfig of (toolSetConfigs$ | async); track toolSetConfig.id) {
-    <app-tool-detail
-      [toolSet]="toolSetConfig"
-      (toolSetUpdated)="updateToolSets()"
-      (toolSetDeleted)="deleteToolSet($event)">
-    </app-tool-detail>
+  @if (loading()) {
+    <div class="text-center py-3">
+      <p class="text-muted">Loading tool sets...</p>
+    </div>
+  } @else {
+    @for (toolSetConfig of (toolSetConfigs$ | async); track toolSetConfig.id) {
+      <app-tool-detail
+        [toolSet]="toolSetConfig"
+        (toolSetUpdated)="updateToolSets()"
+        (toolSetDeleted)="deleteToolSet($event)">
+      </app-tool-detail>
+    } @empty {
+      <p class="text-center text-muted py-3">No tool sets configured yet.</p>
+    }
   }
 </div>
 

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ToolModal } from './tool-modal/tool-modal';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
@@ -18,20 +18,20 @@ export class ConfigureTools {
   private http = inject(HttpClient);
 
   toolSetConfigs$: BehaviorSubject<ToolSetConfig[]> = new BehaviorSubject<ToolSetConfig[]>([]);
-
-  showModal = false;
+  loading = signal(false);
+  showModal = signal(false);
 
   ngOnInit(): void {
     this.loadToolSetConfigs();
   }
 
   openModal(): void {
-    this.showModal = true;
+    this.showModal.set(true);
   }
 
   closeModal(): void {
     this.loadToolSetConfigs();
-    this.showModal = false;
+    this.showModal.set(false);
   }
 
   updateToolSets(): void {
@@ -44,10 +44,17 @@ export class ConfigureTools {
   }
 
   loadToolSetConfigs(): void {
+    this.loading.set(true);
     this.http.get<ToolSetConfig[]>(`${environment.backendUrl}/tool-sets/getAllToolSets`)
-      .subscribe((data) => {
-        const sorted = [...data].sort((a, b) => a.id - b.id);
-        this.toolSetConfigs$.next(sorted);
+      .subscribe({
+        next: (data) => {
+          const sorted = [...data].sort((a, b) => a.id - b.id);
+          this.toolSetConfigs$.next(sorted);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.loading.set(false);
+        }
       });
   }
 }
