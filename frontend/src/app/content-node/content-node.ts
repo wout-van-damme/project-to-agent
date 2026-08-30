@@ -90,9 +90,6 @@ export class ContentNode implements OnInit {
   }
 
   loadAgents(): void {
-    if (this.agents.length > 0) {
-      return;
-    }
     this.loadingAgents.set(true);
     this.http.get<AgentConfig[]>(`${environment.backendUrl}/agents/getAllAgents`)
       .subscribe({
