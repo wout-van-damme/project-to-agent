@@ -11,7 +11,7 @@ from app.database import SessionLocal
 from app.models.agent import AgentModel
 from app.models.comment import CommentModel
 from app.models.node import NodeModel
-from app.tool_defs import TOOLS
+from app.tool_defs import create_tools
 
 
 class PlayService:
@@ -37,10 +37,11 @@ class PlayService:
             try:
                 model = self._build_model(node.agent)
                 prompt = self._build_prompt(node)
+                tools = create_tools(node.agent.name)
 
                 agent = create_agent(
                     model=model,
-                    tools=TOOLS,
+                    tools=tools,
                 )
 
                 response = agent.invoke({"messages": [{"role": "user", "content": prompt}]})
