@@ -1,14 +1,14 @@
-import { Component, inject, Input, Output, EventEmitter } from '@angular/core';
+import { Component, inject, Input, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
 import { AgentConfig } from '../configure-agents.model';
 import { environment } from '../../../environments/environment';
+import { AgentEditModal } from '../agent-edit-modal/agent-edit-modal';
 
 @Component({
   selector: 'app-agent-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, AgentEditModal],
   templateUrl: './agent-detail.component.html',
   styleUrl: './agent-detail.component.scss'
 })
@@ -25,12 +25,7 @@ export class AgentDetailComponent {
 
   private http = inject(HttpClient);
 
-  showEditModal = false;
-  editData = { name: '', provider: '', modelName: '', url: '', apiKey: '' };
-  providers = [
-    { value: 'ollama', label: 'Ollama' },
-    { value: 'openai', label: 'OpenAI' },
-  ];
+  showEditModal = signal(false);
 
   maskApiKey(key: string): string {
     if (!key || key.length <= 8) return '••••••••';
@@ -38,28 +33,16 @@ export class AgentDetailComponent {
   }
 
   openEditModal(): void {
-    this.editData = {
-      name: this.agent.name,
-      provider: this.agent.provider,
-      modelName: this.agent.modelName,
-      url: this.agent.url,
-      apiKey: ''
-    };
-    this.showEditModal = true;
+    this.showEditModal.set(true);
   }
 
   closeEditModal(): void {
-    this.showEditModal = false;
+    this.showEditModal.set(false);
   }
 
-  saveEdit(): void {
-    this.http.put<{ message: string }>(
-      `${environment.backendUrl}/agents/updateAgent/${this.agent.id}`,
-      this.editData
-    ).subscribe(() => {
-      this.closeEditModal();
-      this.agentUpdated.emit();
-    });
+  onAgentSaved(): void {
+    this.closeEditModal();
+    this.agentUpdated.emit();
   }
 
   deleteAgent(): void {

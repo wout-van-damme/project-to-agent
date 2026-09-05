@@ -1,0 +1,45 @@
+@if (show()) {
+  <div class="modal d-block" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Agent</h5>
+          <button type="button" class="btn-close" (click)="close()"></button>
+        </div>
+        <form (ngSubmit)="save()">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input type="text" class="form-control" [(ngModel)]="editData().name" name="name" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Provider</label>
+              <select class="form-select" [(ngModel)]="editData().provider" name="provider" required>
+                @for (p of providers; track p.value) {
+                  <option [value]="p.value">{{ p.label }}</option>
+                }
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Model Name</label>
+              <input type="text" class="form-control" [(ngModel)]="editData().modelName" name="modelName" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">URL</label>
+              <input type="text" class="form-control" [(ngModel)]="editData().url" name="url" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">API Key</label>
+              <input type="password" class="form-control" [(ngModel)]="editData().apiKey" name="apiKey" placeholder="Leave empty to keep current">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show" (click)="close()"></div>
+}
