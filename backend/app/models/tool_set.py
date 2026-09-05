@@ -18,3 +18,4 @@ class ToolSetModel(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
     tools = relationship("ToolModel", secondary=tool_set_tools, back_populates="tool_sets")
+    agents = relationship("AgentModel", back_populates="tool_set")

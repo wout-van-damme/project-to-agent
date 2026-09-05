@@ -1,7 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, Input, Output, EventEmitter, signal } from '@angular/core';
+import { Component, inject, Input, Output, EventEmitter, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../environments/environment';
+
+interface ToolSet {
+  id: number;
+  name: string;
+}
 
 @Component({
   selector: 'app-agent-modal',
@@ -10,7 +15,7 @@ import { environment } from '../../../environments/environment';
   templateUrl: './agent-modal.html',
   styleUrl: './agent-modal.scss'
 })
-export class AgentModal {
+export class AgentModal implements OnInit {
   private http = inject(HttpClient);
 
   @Input() show = signal(false);
@@ -21,10 +26,32 @@ export class AgentModal {
   modelName = '';
   url = '';
   apiKey = '';
+  toolSetId: number | null = null;
 
   providers = [
-    { value: 'ollama', label: 'Ollama' }, // TODO
+    { value: 'ollama', label: 'Ollama' },
   ];
+
+  toolSets: ToolSet[] = [];
+  loadingToolSets = signal(false);
+
+  ngOnInit(): void {
+    this.loadToolSets();
+  }
+
+  loadToolSets(): void {
+    this.loadingToolSets.set(true);
+    this.http.get<ToolSet[]>(`${environment.backendUrl}/tool-sets/getAllToolSets`).subscribe({
+      next: (data) => {
+        this.toolSets = data;
+        this.loadingToolSets.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load tool sets', err);
+        this.loadingToolSets.set(false);
+      }
+    });
+  }
 
   close(): void {
     this.closed.emit();
@@ -39,8 +66,8 @@ export class AgentModal {
             provider: this.provider,
             modelName: this.modelName,
             url: this.url,
-            // TODO: apiKey: this.apiKey SHOULD BE ENCRYPTED
-            apiKey: ''
+            apiKey: '',
+            tool_set_id: this.toolSetId
           }
         ).subscribe(() => {
             this.name = '';
@@ -48,6 +75,7 @@ export class AgentModal {
             this.modelName = '';
             this.url = '';
             this.apiKey = '';
+            this.toolSetId = null;
             this.closed.emit();
         });
   }

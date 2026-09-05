@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -13,6 +13,8 @@ class AgentModel(Base):
     modelName = Column(String)
     url = Column(String)
     apiKey = Column(String)
+    tool_set_id = Column(Integer, ForeignKey("tool_sets.id"))
 
     nodes = relationship("NodeModel", back_populates="agent")
+    tool_set = relationship("ToolSetModel", back_populates="agents")
     

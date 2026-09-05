@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 class AgentCreate(BaseModel):
@@ -7,6 +8,7 @@ class AgentCreate(BaseModel):
     modelName: str
     url: str
     apiKey: str
+    tool_set_id: Optional[int] = None
 
 
 class AgentUpdate(BaseModel):
@@ -15,6 +17,7 @@ class AgentUpdate(BaseModel):
     modelName: str | None = None
     url: str | None = None
     apiKey: str | None = None
+    tool_set_id: Optional[int] = None
 
 
 class AgentResponse(BaseModel):
@@ -24,5 +27,6 @@ class AgentResponse(BaseModel):
     modelName: str
     url: str
     apiKey: str
+    tool_set_id: Optional[int] = None
     
     model_config = {"from_attributes": True}

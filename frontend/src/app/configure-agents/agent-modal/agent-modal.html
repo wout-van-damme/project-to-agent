@@ -33,8 +33,17 @@
               <input id="agentApiKey" type="password" class="form-control" [(ngModel)]="apiKey" name="apiKey" />
             </div>
             <div class="mb-3">
-              <label class="form-label">Tools <span class="text-muted">(WIP)</span></label>
-              <div class="form-text text-muted">Not implemented yet</div>
+              <label for="agentToolSet" class="form-label">Tool Set</label>
+              <select id="agentToolSet" class="form-select" [(ngModel)]="toolSetId" name="toolSetId">
+                <option [value]="null">-- None --</option>
+                @if (loadingToolSets()) {
+                  <option [ngValue]="null" disabled>Loading Tool sets...</option>
+                } @else {
+                  @for (ts of toolSets; track ts.id) {
+                    <option [value]="ts.id">{{ ts.name }}</option>
+                  }
+                }
+              </select>
             </div>
           </div>
           <div class="modal-footer">

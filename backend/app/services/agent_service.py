@@ -16,7 +16,8 @@ class AgentService:
             provider=data.provider,
             modelName=data.modelName,
             url=data.url,
-            apiKey=data.apiKey
+            apiKey=data.apiKey,
+            tool_set_id=data.tool_set_id
         )
         self.db.add(agent)
         self.db.commit()
@@ -34,7 +35,8 @@ class AgentService:
                 provider=a.provider,
                 modelName=a.modelName,
                 url=a.url,
-                apiKey=a.apiKey
+                apiKey=a.apiKey,
+                tool_set_id=a.tool_set_id
             )
             for a in agents
         ]
