@@ -7,4 +7,5 @@ export interface AgentConfig {
     modelName: string;
     url: string;
     apiKey: string;
+    gitRepository?: string;
 }

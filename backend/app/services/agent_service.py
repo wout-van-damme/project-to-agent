@@ -17,6 +17,7 @@ class AgentService:
             modelName=data.modelName,
             url=data.url,
             apiKey=data.apiKey,
+            gitRepository=data.gitRepository,
             tool_set_id=data.tool_set_id
         )
         self.db.add(agent)
@@ -36,6 +37,7 @@ class AgentService:
                 modelName=a.modelName,
                 url=a.url,
                 apiKey=a.apiKey,
+                gitRepository=a.gitRepository,
                 tool_set_id=a.tool_set_id
             )
             for a in agents

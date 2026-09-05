@@ -26,7 +26,7 @@ export class AgentEditModal implements OnInit {
   @Output()
   saved = new EventEmitter<void>();
 
-  editData = signal({ name: '', provider: '', modelName: '', url: '', apiKey: '' });
+  editData = signal({ name: '', provider: '', modelName: '', url: '', apiKey: '', gitRepository: '' });
   providers = [
     { value: 'ollama', label: 'Ollama' },
     { value: 'openai', label: 'OpenAI' },
@@ -69,6 +69,7 @@ export class AgentEditModal implements OnInit {
       modelName: this.agent.modelName,
       url: this.agent.url,
       apiKey: '',
+      gitRepository: this.agent.gitRepository || '',
     });
   }
 }

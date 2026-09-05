@@ -33,6 +33,10 @@
               <input id="agentApiKey" type="password" class="form-control" [(ngModel)]="apiKey" name="apiKey" />
             </div>
             <div class="mb-3">
+              <label for="agentGitRepository" class="form-label">Git Repository <span class="text-muted">(optional)</span></label>
+              <input id="agentGitRepository" type="text" class="form-control" [(ngModel)]="gitRepository" name="gitRepository" />
+            </div>
+            <div class="mb-3">
               <label for="agentToolSet" class="form-label">Tool Set</label>
               <select id="agentToolSet" class="form-select" [(ngModel)]="toolSetId" name="toolSetId">
                 <option [value]="null">-- None --</option>

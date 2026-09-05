@@ -26,6 +26,7 @@ export class AgentModal implements OnInit {
   modelName = '';
   url = '';
   apiKey = '';
+  gitRepository = '';
   toolSetId: number | null = null;
 
   providers = [
@@ -67,6 +68,7 @@ export class AgentModal implements OnInit {
             modelName: this.modelName,
             url: this.url,
             apiKey: '',
+            gitRepository: this.gitRepository,
             tool_set_id: this.toolSetId
           }
         ).subscribe(() => {
@@ -75,6 +77,7 @@ export class AgentModal implements OnInit {
             this.modelName = '';
             this.url = '';
             this.apiKey = '';
+            this.gitRepository = '';
             this.toolSetId = null;
             this.closed.emit();
         });

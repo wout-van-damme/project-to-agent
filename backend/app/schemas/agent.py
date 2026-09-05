@@ -8,6 +8,7 @@ class AgentCreate(BaseModel):
     modelName: str
     url: str
     apiKey: str
+    gitRepository: Optional[str] = None
     tool_set_id: Optional[int] = None
 
 
@@ -17,6 +18,7 @@ class AgentUpdate(BaseModel):
     modelName: str | None = None
     url: str | None = None
     apiKey: str | None = None
+    gitRepository: Optional[str] = None
     tool_set_id: Optional[int] = None
 
 
@@ -27,6 +29,7 @@ class AgentResponse(BaseModel):
     modelName: str
     url: str
     apiKey: str
+    gitRepository: Optional[str] = None
     tool_set_id: Optional[int] = None
     
     model_config = {"from_attributes": True}
