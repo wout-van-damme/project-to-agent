@@ -1,4 +1,6 @@
+import subprocess
 from datetime import datetime
+from pathlib import Path
 
 from sqlalchemy.orm import Session
 from langchain_core.messages import SystemMessage
@@ -7,6 +9,7 @@ from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
 from langchain.agents import create_agent
 
+from app.config import AGENT_WORKING_DIR
 from app.database import SessionLocal
 from app.models.agent import AgentModel
 from app.models.comment import CommentModel
@@ -34,6 +37,8 @@ class PlayService:
             node.status = "in progress"
             db.commit()
 
+            self._ensure_git_repo_cloned(node.agent)
+
             try:
                 model = self._build_model(node.agent)
                 prompt = self._build_prompt(node)
@@ -56,6 +61,19 @@ class PlayService:
             db.commit()
         finally:
             db.close()
+
+    def _ensure_git_repo_cloned(self, agent: AgentModel) -> None:
+        if not agent.gitRepository:
+            return
+
+        agent_root = Path("./") / AGENT_WORKING_DIR / agent.name
+        agent_root.mkdir(parents=True, exist_ok=True)
+
+        subprocess.run(
+            ["git", "clone", agent.gitRepository, "."],
+            check=True,
+            cwd=str(agent_root),
+        )
 
     def _build_prompt(self, node: NodeModel) -> str:
         context = self._build_context(node)
