@@ -3,7 +3,7 @@ from datetime import datetime
 from pathlib import Path
 
 from sqlalchemy.orm import Session
-from langchain_core.messages import SystemMessage
+from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
@@ -44,12 +44,29 @@ class PlayService:
                 prompt = self._build_prompt(node)
                 tools = create_tools(node.agent.name)
 
+                if node.agent.gitRepository:
+                    system_instruction = """
+                    You are a helpful assistant, your non-tool output is called the "log".
+
+                    - Output your response as a log. Avoid writing files unless needed for the task result.
+                    - For coding tasks: typically edit/write files and provide a branch/diff in the log.
+                    - For coding questions: output directly in the log instead.
+                    """
+                else:
+                    system_instruction = """
+                    You are a helpful assistant, your non-tool output is called the "log".
+
+                    - Output your response as a log. Avoid writing files unless needed for the task result.
+                    - For coding questions: output directly in the log.
+                    - Generate content directly in the log: code, email drafts, or other writing.
+                    """
+
                 agent = create_agent(
                     model=model,
                     tools=tools,
                 )
 
-                response = agent.invoke({"messages": [{"role": "user", "content": prompt}]})
+                response = agent.invoke({"messages": [SystemMessage(content=system_instruction), {"role": "user", "content": prompt}]})
                 response = response['messages'][-1]
             finally:
                 node.status = "review me"
