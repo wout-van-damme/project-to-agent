@@ -67,7 +67,14 @@ class PlayService:
                 )
 
                 response = agent.invoke({"messages": [SystemMessage(content=system_instruction), {"role": "user", "content": prompt}]})
-                response = response['messages'][-1]
+                messages = response['messages']
+                last_ai_message = None
+                for msg in reversed(messages):
+                    if msg.__class__.__name__ == 'AIMessage' and (msg.content or msg.tool_calls):
+                        last_ai_message = msg
+                        break
+                response = last_ai_message or messages[-1]
+
             finally:
                 node.status = "review me"
                 db.commit()
