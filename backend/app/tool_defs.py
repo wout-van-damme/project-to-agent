@@ -1,6 +1,7 @@
 from pathlib import Path
 from langchain_core.tools import tool
 from app.config import AGENT_WORKING_DIR
+import subprocess
 
 
 def _get_agent_root(agent_name: str) -> Path:
@@ -45,4 +46,58 @@ def create_tools(agent_name: str):
         except Exception as e:
             return f"ERROR: Writing file:\n```{e}```\n"
 
-    return [read_file, write_file]
+    @tool
+    def get_git_links() -> str:
+        """Get formatted git branch link and diff link for the current branch. Only works if the agent has a git repository assigned."""
+        try:
+            agent_root = _get_agent_root(agent_name)
+            
+            result = subprocess.run(
+                ["git", "branch", "--show-current"],
+                cwd=str(agent_root),
+                capture_output=True,
+                text=True,
+            )
+            current_branch = result.stdout.strip()
+            if not current_branch:
+                return "ERROR: No current branch"
+            
+            result = subprocess.run(
+                ["git", "config", "--get", "remote.origin.url"],
+                cwd=str(agent_root),
+                capture_output=True,
+                text=True,
+            )
+            remote_url = result.stdout.strip()
+            if not remote_url:
+                return "ERROR: No remote origin"
+            
+            branch_link, diff_link = _format_git_links(remote_url, current_branch)
+            
+            return f"Branch: {branch_link}\nDiff: {diff_link}"
+        except Exception as e:
+            return f"ERROR: Getting git links:\n```{e}```\n"
+
+    return [read_file, write_file, get_git_links]
+
+
+def _format_git_links(remote_url: str, branch: str) -> tuple[str, str]:
+    url = remote_url.replace(".git", "")
+    if url.endswith("/"):
+        url = url[:-1]
+    
+    if "github.com" in url:
+        if url.startswith("git@"):
+            url = url.replace("git@github.com:", "https://github.com/")
+        branch_link = f"{url}/tree/{branch}"
+        diff_link = f"{url}/compare/main...{branch}"
+    elif "gitlab.com" in url:
+        if url.startswith("git@"):
+            url = url.replace("git@gitlab.com:", "https://gitlab.com/")
+        branch_link = f"{url}/-/tree/{branch}"
+        diff_link = f"{url}/-/compare/main...{branch}"
+    else:
+        branch_link = f"{url}/tree/{branch}"
+        diff_link = f"{url}/compare/main...{branch}"
+    
+    return branch_link, diff_link

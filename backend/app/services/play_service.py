@@ -1,6 +1,4 @@
-import subprocess
 from datetime import datetime
-from pathlib import Path
 
 from sqlalchemy.orm import Session
 from langchain_core.messages import SystemMessage, HumanMessage
@@ -15,11 +13,13 @@ from app.models.agent import AgentModel
 from app.models.comment import CommentModel
 from app.models.node import NodeModel
 from app.tool_defs import create_tools
+from app.services.git_service import GitService
 
 
 class PlayService:
     def __init__(self, db: Session):
         self.db = db
+        self.git_service = GitService()
 
     def can_play(self, node_id: int) -> bool:
         node = self.db.query(NodeModel).filter(NodeModel.id == node_id).first()
@@ -37,7 +37,9 @@ class PlayService:
             node.status = "in progress"
             db.commit()
 
-            self._ensure_git_repo_cloned(node.agent)
+            if node.agent.gitRepository:
+                self.git_service.create_branch(node.agent, node)
+            
 
             try:
                 model = self._build_model(node.agent)
@@ -51,6 +53,7 @@ class PlayService:
                     - Output your response as a log. Avoid writing files unless needed for the task result.
                     - For coding tasks: typically edit/write files and provide a branch/diff in the log.
                     - For coding questions: output directly in the log instead.
+                    - In your final response add an explanation of what you did and at the and add a formatted git branch link and diff.
                     """
                 else:
                     system_instruction = """
@@ -83,21 +86,12 @@ class PlayService:
             comment = CommentModel(node_id=node_id, sender=node.agent.name, content=response.content)
             db.add(comment)
             db.commit()
+
+            if node.agent.gitRepository:
+                self.git_service.push_current_branch(node.agent)
+
         finally:
             db.close()
-
-    def _ensure_git_repo_cloned(self, agent: AgentModel) -> None:
-        if not agent.gitRepository:
-            return
-
-        agent_root = Path("./") / AGENT_WORKING_DIR / agent.name
-        agent_root.mkdir(parents=True, exist_ok=True)
-
-        subprocess.run(
-            ["git", "clone", agent.gitRepository, "."],
-            check=True,
-            cwd=str(agent_root),
-        )
 
     def _build_prompt(self, node: NodeModel) -> str:
         context = self._build_context(node)
